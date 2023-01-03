@@ -1,6 +1,8 @@
 clear
 echo "Compiling BitOS!"
 cd ~/BitOS/kernel
+rm -r lib
+mkdir lib
 make
 make buildimg
 cd ~/BitOS/gnu-efi/
