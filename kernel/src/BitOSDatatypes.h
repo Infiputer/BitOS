@@ -2,6 +2,9 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include "efiMemory.h"
+#include "FontDefinitions.h"
+#include "FrameBuffer.h"
 
 
 #define true 1

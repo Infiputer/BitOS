@@ -10,6 +10,7 @@ class Graphics{
         size_t *preRenderedBuffer;
         unsigned int* pixPtr;
         uint64_t totalScreenSize;
+        
         Graphics(Framebuffer* targetFramebuffer, PSF1_FONT* psf1_Font)
         {
             TargetFramebuffer = targetFramebuffer;
