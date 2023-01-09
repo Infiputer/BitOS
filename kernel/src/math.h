@@ -1,3 +1,5 @@
+#pragma once
+
 double PI = 3.141592653589793;
 double TWO_PI = 6.283185307179586;
 double mathmap(double x, double in_min, double in_max, double out_min, double out_max) {

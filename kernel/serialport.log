@@ -1,0 +1,46 @@
+[2J[01;01H[=3h[2J[01;01H[0m[35m[40m[0m[37m[40mBdsDxe: failed to load Boot0001 "UEFI QEMU DVD-ROM QM00003 " from PciRoot(0x0)/Pci(0x1,0x1)/Ata(Secondary,Master,0x0): Not Found
+BdsDxe: failed to load Boot0002 "UEFI QEMU HARDDISK QM00001 " from PciRoot(0x0)/Pci(0x1,0x1)/Ata(Primary,Master,0x0): Not Found
+BdsDxe: loading Boot0003 "EFI Internal Shell" from Fv(7CB8BDC9-F8EB-4F34-AAEA-3EE4AF6516A1)/FvFile(7C04A583-9E3E-4F1C-AD65-E05268D0B4D1)
+BdsDxe: starting Boot0003 "EFI Internal Shell" from Fv(7CB8BDC9-F8EB-4F34-AAEA-3EE4AF6516A1)/FvFile(7C04A583-9E3E-4F1C-AD65-E05268D0B4D1)
+[2J[01;01H[01;01HUEFI Interactive Shell v2.2
+EDK II
+UEFI v2.70 (EDK II, 0x00010000)
+[1m[33m[40mMapping table[0m[37m[40m
+[1m[33m[40m      FS0:[0m[37m[40m [1m[37m[40mAlias(s):[0m[37m[40mHD0a1:;BLK1:
+          PciRoot(0x0)/Pci(0x1,0x1)/Ata(0x0)/HD(1,MBR,0x00000000,0x0,0xB40)
+[1m[33m[40m     BLK0:[0m[37m[40m [1m[37m[40mAlias(s):[0m[37m[40m
+          PciRoot(0x0)/Pci(0x1,0x1)/Ata(0x0)
+[1m[33m[40m     BLK2:[0m[37m[40m [1m[37m[40mAlias(s):[0m[37m[40m
+          PciRoot(0x0)/Pci(0x1,0x1)/Ata(0x0)
+[11;01HPress [1m[37m[40mESC[0m[37m[40m in 5 seconds to skip [1m[33m[40mstartup.nsh[0m[37m[40m or any other key to continue.[11;01HPress [1m[37m[40mESC[0m[37m[40m in 4 seconds to skip [1m[33m[40mstartup.nsh[0m[37m[40m or any other key to continue.[11;01HPress [1m[37m[40mESC[0m[37m[40m in 3 seconds to skip [1m[33m[40mstartup.nsh[0m[37m[40m or any other key to continue.[11;01HPress [1m[37m[40mESC[0m[37m[40m in 2 seconds to skip [1m[33m[40mstartup.nsh[0m[37m[40m or any other key to continue.[11;01HPress [1m[37m[40mESC[0m[37m[40m in 1 seconds to skip [1m[33m[40mstartup.nsh[0m[37m[40m or any other key to continue.
+[2J[01;01H[2J[01;01H[2J[01;01HFound bootloader on fs0:
+Bit OS booted!
+Kernel Loaded Successfully 
+kernel header successfully verified
+Kernel Loaded
+Font found. char size = 18
+GOP located
+Base: 0x80000000
+Size: 0x1D5000
+Width: 800
+Height: 600
+PixelsPerScanline: 800
+!!!! X64 Exception Type - 0E(#PF - Page-Fault)  CPU Apic ID - 00000000 !!!!
+ExceptionData - 0000000000000000  I:0 R:0 U:0 W:0 P:0 PK:0 SS:0 SGX:0
+RIP  - 0000000000000057, CS  - 0000000000000038, RFLAGS - 0000000000000202
+RAX  - 000000100D8A95A8, RCX - 000000000EA1AA98, RDX - 0000000FFEE8E990
+RBX  - 000000000FF07568, RSP - 000000000FF074F0, RBP - 000000000FF074F0
+RSI  - 000000000FF076C8, RDI - 000000000EA1AC18
+R8   - 000000000FF07568, R9  - 0000000000000000, R10 - 0000000000000036
+R11  - 0000000000000010, R12 - 0000000000000000, R13 - 000000000EA19818
+R14  - 0000000000000000, R15 - 000000000E98B960
+DS   - 0000000000000030, ES  - 0000000000000030, FS  - 0000000000000030
+GS   - 0000000000000030, SS  - 0000000000000030
+CR0  - 0000000080010033, CR2 - 000000100D8A95C0, CR3 - 000000000FC01000
+CR4  - 0000000000000668, CR8 - 0000000000000000
+DR0  - 0000000000000000, DR1 - 0000000000000000, DR2 - 0000000000000000
+DR3  - 0000000000000000, DR6 - 00000000FFFF0FF0, DR7 - 0000000000000400
+GDTR - 000000000F9EE698 0000000000000047, LDTR - 0000000000000000
+IDTR - 000000000F585018 0000000000000FFF,   TR - 0000000000000000
+FXSAVE_STATE - 000000000FF07150
+!!!! Can't find image information. !!!!

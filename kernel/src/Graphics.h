@@ -1,13 +1,81 @@
 #pragma once
 #include "FrameBuffer.h"
 #include "FontDefinitions.h"
-#include "math.h"
+#include "GraphicsHelper.h"
+#include <stdint.h>
+
+#define TWO_PI 6.283185307179586
+
+#define FABS(x) \
+  ({ \
+    x < 0 ? -x : x; \
+  })
+
+#define ABS(x) \
+  ({ \
+    x < 0 ? -x : x; \
+  })
+
+#define SQRT(x) \
+  ({ \
+    double guess = 1.0; \
+    for (int i = 0; i < 10; i++) { \
+      guess = (guess + x / guess) / 2.0; \
+    } \
+    guess; \
+  })
+
+#define DISTANCE(x1, y1, x2, y2) \
+  SQRT((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2))
+
+#define SIN(x) \
+  ({ \
+    double result = x; \
+    double term = x; \
+    int i = 1; \
+    while (FABS(term) > 1e-6) { \
+      term = -term * x * x / (2 * i + 1) / (2 * i + 2); \
+      result += term; \
+      i++; \
+    } \
+    result; \
+  })
+
+#define COS(x) \
+  ({ \
+    double result = 1.0; \
+    double term = 1.0; \
+    int i = 1; \
+    while (FABS(term) > 1e-6) { \
+      term = -term * x * x / (2 * i) / (2 * i + 1); \
+      result += term; \
+      i++; \
+    } \
+    result; \
+  })
+
+#define CONSTANTLERP(a, b, t) \
+    ({ \
+    a + (b - a) * t; \
+    })
+
+#define FMOD(a, b) \
+  ({ \
+    double result = a - b * floor(a / b); \
+    result >= 0 ? result : result + b; \
+  })
+
+#define FLOOR(x, p) \
+  ({ \
+    double result = x * p; \
+    result = result - (result > x * p); \
+    result / p; \
+  })
 
 class Graphics{
     public:
         Framebuffer* TargetFramebuffer;
         PSF1_FONT* PSF1_Font;
-        size_t *preRenderedBuffer;
         unsigned int* pixPtr;
         uint64_t totalScreenSize;
         
@@ -16,25 +84,15 @@ class Graphics{
             TargetFramebuffer = targetFramebuffer;
             PSF1_Font = psf1_Font;
             totalScreenSize = (TargetFramebuffer->PixelsPerScanLine)*(TargetFramebuffer->Height);
-            //unsigned int pointerPreRenderedBuffer[TargetFramebuffer->PixelsPerScanLine*TargetFramebuffer->Height];
             pixPtr = (unsigned int*)TargetFramebuffer->BaseAddress;
-            //preRenderedBuffer = pointerPreRenderedBuffer;
         }
-
         void clear(unsigned int color){
-            for(unsigned int i = 0; i < (TargetFramebuffer->PixelsPerScanLine)*(TargetFramebuffer->Height); i++){
-                preRenderedBuffer[i] = color;
+            for(unsigned int i = 0; i < totalScreenSize; i++){
+                *(unsigned int*)(pixPtr + i) = color;
             }
         }
         void drawPixel(unsigned int color, unsigned int x, unsigned y){
-            preRenderedBuffer[x + y * TargetFramebuffer->PixelsPerScanLine] = color;
-            //unsigned int* pixPtr = (unsigned int*)TargetFramebuffer->BaseAddress;
-            //*(unsigned int*)((unsigned int*)TargetFramebuffer->BaseAddress + x + (y * TargetFramebuffer->PixelsPerScanLine)) = color;
-        }
-        void render(){
-            for(unsigned int i = 0; i < totalScreenSize; i++){
-               *(unsigned int*)(pixPtr + i) = preRenderedBuffer[i];
-            }
+            *(unsigned int*)((unsigned int*)pixPtr + x + (y * TargetFramebuffer->PixelsPerScanLine)) = color;
         }
         void fillRect(unsigned int color, unsigned int xOff, unsigned int yOff, unsigned int width, unsigned int height){
             for(unsigned drawX = xOff; drawX < xOff+width; drawX++){
@@ -45,66 +103,43 @@ class Graphics{
         }
 
         void drawLine(unsigned int color, double x1, double y1, double x2, double y2, unsigned int thickness = 1){
-            unsigned int dist = distance(x1, y1, x2, y2);
-            double xDist = abs(x2-x1);
-            double yDist = abs(y2-y1);
+            unsigned int dist = DISTANCE(x1, y1, x2, y2);
+            double xDist = ABS(x2-x1);
+            double yDist = ABS(y2-y1);
             for(int i = 0; i < dist; i++){
-                fillRect(
+                drawPixel(
                     color,
                     x1,
-                    y1,
-                    thickness, thickness
+                    y1
                 );
-                x1 = constantlerp(x1, x2, xDist/dist);
-                y1 = constantlerp(y1, y2, yDist/dist);
+                x1 = CONSTANTLERP(x1, x2, xDist/dist);
+                y1 = CONSTANTLERP(y1, y2, yDist/dist);
             }
         }
         void drawRect(unsigned int color, unsigned int x, unsigned int y, unsigned int width, unsigned int height){
-            drawLine(color, x, y, x+width, y);
-            drawLine(color, x, y+height, x+width+1, y+height);
-            drawLine(color, x, y, x, y+height);
-            drawLine(color, x+width, y, x+width, y+height);
-        }
-        void drawCircle(unsigned int color, unsigned int xOff, unsigned int yOff, unsigned int radius, unsigned int sides = 50){
-            double incrementValue = 6.28/sides;
-            for(double rad = 0; rad < 6.28; rad+=incrementValue){
-                drawPixel(color, xOff+cos(rad)*radius, yOff+sin(rad)*radius);
+            // drawLine(color, x, y, x+width, y);
+            // drawLine(color, x, y+height, x+width+1, y+height);
+            // drawLine(color, x, y, x, y+height);
+            // drawLine(color, x+width, y, x+width, y+height);
+            for(uint64_t x1 = x; x1 < x+width+1; x1++){
+                drawPixel(color, x1, y);
+                drawPixel(color, x1, y+height);
             }
-        }
-        void fillCircle(unsigned int color, unsigned int xOff, unsigned int yOff, unsigned int radius, unsigned int sides = 100, double rotation = 0){
-            double incrementValue = TWO_PI/sides;
-            for(double rad = rotation; rad < TWO_PI+rotation; rad+=incrementValue){
-                double cosResult1 = cos(rad);
-                double sinResult1 = sin(rad);
-                double cosResult2 = cos(rad+incrementValue);
-                double sinResult2 = sin(rad+incrementValue);
-                drawLine(color, xOff, yOff, xOff+cosResult1*radius, yOff+sinResult1*radius);
-                for(unsigned radius2 = 0; radius2 < radius; radius2++){
-                    drawLine(
-                        color,
-                        xOff+cosResult1*radius2,
-                        yOff+sinResult1*radius2,
-                        xOff+cosResult2*radius2,
-                        yOff+sinResult2*radius2
-                    );
-                }
+            for(uint64_t y1 = y; y1 < y+height; y1++){
+                drawPixel(color, x, y1);
+                drawPixel(color, x + width, y1);
             }
         }
 
         void putChar(unsigned int color, char chr, unsigned int xOff, unsigned int yOff, float width = 1, float height = 1)
         {
-            unsigned int* pixPtr = (unsigned int*)TargetFramebuffer->BaseAddress;
             char* fontPtr = (char*)PSF1_Font->glyphBuffer + (chr * PSF1_Font->psf1_Header->charsize);
-            for (unsigned long y = 0; y < 20; y++){
-                for (unsigned long x = 0; x < 8; x++){
-                    if ((*fontPtr & (0b10000000 >> x)) > 0){
-                        if(width == 0 && height == 0){
-                            drawPixel(color, x * width + xOff, y * height + yOff);
+            for (unsigned long y = yOff; y < yOff + 16; y++){
+                for (unsigned long x = xOff; x < xOff+8; x++){
+                    if ((*fontPtr & (0b10000000 >> (x - xOff))) > 0){
+                            *(unsigned int*)(pixPtr + x + (y * TargetFramebuffer->PixelsPerScanLine)) = color;
                         }
-                        else{
-                            fillRect(color, x * width + xOff, y * height + yOff, width+1, height+1);
-                        }
-                    }
+
                 }
                 fontPtr++;
             }
@@ -117,11 +152,11 @@ class Graphics{
             char* chr = (char*)str;
             while(*chr != 0){
                 putChar(color, *chr, xOff, yOff, width, height);
-                xOff+=width*8;
-                if(xOff + width * 8 > TargetFramebuffer->Width)
+                xOff+=8;
+                if(xOff > TargetFramebuffer->Width)
                 {
                     xOff = 0;
-                    yOff += height*16;
+                    yOff += 20;
                 }
                 chr++;
             }

@@ -8,12 +8,12 @@
 #define ICW1 0x11
 #define ICW4 0x01
 
-void outb(short port, char data){
+static void outb(short port, char data){
         asm volatile("outb %0, %1" : : "a"(data), "Nd"(port));
         return;
 }
 
-char inb(short port){
+static char inb(short port){
         char res;
         asm volatile("inb %1, %0" : "=a"(res) : "Nd"(port));
         return res;
@@ -21,12 +21,12 @@ char inb(short port){
 
 /**************** SEND/RECEIVE WORD ******************/
 
-void outw(short port, short value)
+static void outw(short port, short value)
 {
         asm volatile ("outw %w0, %1" : : "a" (value), "id" (port) );
 }
 
-short inw(short port){
+static short inw(short port){
    short ret;
    asm volatile ("inw %1, %0" : "=a" (ret) : "dN" (port));
    return ret;
@@ -34,17 +34,17 @@ short inw(short port){
 
 /**************** SEND/RECEIVE LONG (32-BIT) ******************/
 
-void outl(short port, int value){
+static void outl(short port, int value){
         asm volatile ("outl %%eax, %%dx" :: "d" (port), "a" (value));
 }
 
-int inl(short port){
+static int inl(short port){
    int ret;
    asm volatile ("inl %1, %0" : "=a" (ret) : "dN" (port));
    return ret;
 }
 
-void init_pics(int pic1, int pic2)
+static void init_pics(int pic1, int pic2)
 {
    /* send ICW1 */
    outb(PIC1, ICW1);
@@ -64,4 +64,8 @@ void init_pics(int pic1, int pic2)
 
    /* disable all IRQs */
    outb(PIC1 + 1, 0xFF);
+}
+
+static void io_wait(){
+    asm volatile ("outb %%al, $0x80" : : "a"(0));
 }
