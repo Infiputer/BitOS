@@ -1,7 +1,6 @@
 #pragma once
 #include <stddef.h>
 #include <stdint.h>
-#include <cstring>
 
 #include "FrameBuffer.h"
 #include "FontDefinitions.h"

@@ -8,6 +8,7 @@
 #include "interrupts/IDT.h"
 #include "interrupts/interrupts.h"
 #include "portIO.h"
+#include "keyboard/KeyPressType.h"
 
 extern uint64_t screenWidth;
 extern uint64_t screenHeight;
@@ -17,6 +18,7 @@ extern uint64_t _KernelEnd;
 
 uint64_t screenWidth;
 uint64_t screenHeight;
+
 
 IDTR idtr;
 void PrepareInterrupts(){

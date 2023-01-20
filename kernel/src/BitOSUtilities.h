@@ -1,6 +1,5 @@
 #pragma once
-#include <cstring>
-char* itoa(int value, char* result, int base) {
+static char* itoa(int value, char* result, int base) {
     // check that the base if valid
     if (base < 2 || base > 36) { *result = '\0'; return result; }
 
@@ -24,14 +23,14 @@ char* itoa(int value, char* result, int base) {
     return result;
 }
 
-bool isAlpha(char c){
+static bool isAlpha(char c){
     if((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')){
         return true;
     }
     return false;
 }
 
-char toUpper(char c){
+static char toUpper(char c){
     return c+('A'-'a');
 }
 
@@ -45,7 +44,7 @@ char toUpper(char c){
 //   return (*us1 > *us2) - (*us1 < *us2);
 // }
 
-size_t strlen(const char* str)
+static size_t strlen(const char* str)
 {
     size_t ret = 0;
     while ( str[ret] != 0 )

@@ -1,10 +1,9 @@
 #pragma once
 #include <stdint.h>
-#include <cstring>
+#include "BitOSUtilities.h"
 #include "GraphicsHelper.h"
 
 extern Graphics* graphics;
-
 
 struct RGB {
     uint8_t red;
