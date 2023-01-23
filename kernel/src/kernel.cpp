@@ -33,35 +33,38 @@ extern "C" void _start(BootInfo *bootInfo)
     renderWindow(&textEdit);
     while (true)
     {
-        asm("cli");
-        for (uint8_t i = 0; i < maxKeysDown; i++)
-        {
-            graphics->fillRect(0xff0fff, 0, i * 60, 300, 60);
-            graphics->putChar(0, keysPressed[i].key, 0, i * 60);
-            switch (keysPressed[i].keyType)
-            {
-                case 0:
-                    graphics->print(0, "Control Key", 0, i * 60 + 20);
-                    break;
-                case 1:
-                    graphics->print(0, "Function Key", 0, i * 60 + 20);
-                    break;
-                case 2:
-                    graphics->print(0, "Ascii Key", 0, i * 60 + 20);
-                    break;
-                case 3:
-                    graphics->print(0, "Arrow Key", 0, i * 60 + 20);
-                    break;
-                case 127:
-                    graphics->print(0, "Not Pressed", 0, i * 60 + 20);
-                    break;
-                default:
-                    break;
-            }
-            graphics->putChar(0, keysPressed[i].timeHeld, 0, i * 60 + 40);
-        }
+        //asm("cli");
+        //ProcessMousePacket();
+        // for (uint8_t i = 0; i < maxKeysDown; i++)
+        // {
+        //     graphics->fillRect(0xff0fff, 0, i * 60, 300, 60);
+        //     graphics->putChar(0, keysPressed[i].key, 0, i * 60);
+        //     switch (keysPressed[i].keyType)
+        //     {
+        //         case 0:
+        //             graphics->print(0, "Control Key", 0, i * 60 + 20);
+        //             break;
+        //         case 1:
+        //             graphics->print(0, "Function Key", 0, i * 60 + 20);
+        //             break;
+        //         case 2:
+        //             graphics->print(0, "Ascii Key", 0, i * 60 + 20);
+        //             break;
+        //         case 3:
+        //             graphics->print(0, "Arrow Key", 0, i * 60 + 20);
+        //             break;
+        //         case 127:
+        //             graphics->print(0, "Not Pressed", 0, i * 60 + 20);
+        //             break;
+        //         default:
+        //             graphics->print(0, to_string((int64_t)keysPressed[i].keyType), 0, i * 60 + 20);
+        //             break;
+        //     }
+        //     graphics->putChar(0, keysPressed[i].timeHeld, 0, i * 60 + 40);
+        // }
 
-        asm("sti");
+        //asm("sti");
+        
     }
     return;
 }

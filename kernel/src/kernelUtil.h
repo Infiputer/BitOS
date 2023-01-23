@@ -1,7 +1,7 @@
 #pragma once
 #include "BitOSDatatypes.h"
 #include "PageFrameAllocator.h"
-//#include "math.h"
+#include "mouse/mouse.h"
 #include "renderWindow.h"
 #include "efiMemory.h"
 #include "gdt/gdt.h"
@@ -15,49 +15,39 @@ extern uint64_t screenHeight;
 extern uint64_t _KernelStart;
 extern uint64_t _KernelEnd;
 
-
 uint64_t screenWidth;
 uint64_t screenHeight;
 
-
 IDTR idtr;
-void PrepareInterrupts(){
+void SetIDTGate(void *handler, uint8_t entryOffset, uint8_t type_attr, uint8_t selector)
+{
+
+    IDTDescEntry *interrupt = (IDTDescEntry *)(idtr.Offset + entryOffset * sizeof(IDTDescEntry));
+    interrupt->SetOffset((uint64_t)handler);
+    interrupt->type_attr = type_attr;
+    interrupt->selector = selector;
+}
+
+void PrepareInterrupts()
+{
     idtr.Limit = 0x0FFF;
     idtr.Offset = (uint64_t)GlobalAllocator.RequestPage();
 
-    IDTDescEntry* int_PageFault = (IDTDescEntry*)(idtr.Offset + 0xE * sizeof(IDTDescEntry));
-    int_PageFault->SetOffset((uint64_t)PageFault_Handler);
-    int_PageFault->type_attr = IDT_TA_InterruptGate;
-    int_PageFault->selector = 0x08;
+    SetIDTGate((void *)PageFault_Handler, 0xE, IDT_TA_InterruptGate, 0x08);
+    SetIDTGate((void *)DoubleFault_Handler, 0x8, IDT_TA_InterruptGate, 0x08);
+    SetIDTGate((void *)GPFault_Handler, 0xD, IDT_TA_InterruptGate, 0x08);
+    SetIDTGate((void *)KeyboardInt_Handler, 0x21, IDT_TA_InterruptGate, 0x08);
+    SetIDTGate((void *)MouseInt_Handler, 0x2C, IDT_TA_InterruptGate, 0x08);
 
-    IDTDescEntry* int_DoubleFault = (IDTDescEntry*)(idtr.Offset + 0x8 * sizeof(IDTDescEntry));
-    int_DoubleFault->SetOffset((uint64_t)DoubleFault_Handler);
-    int_DoubleFault->type_attr = IDT_TA_InterruptGate;
-    int_DoubleFault->selector = 0x08;
-
-    IDTDescEntry* int_GPFault = (IDTDescEntry*)(idtr.Offset + 0xD * sizeof(IDTDescEntry));
-    int_GPFault->SetOffset((uint64_t)GPFault_Handler);
-    int_GPFault->type_attr = IDT_TA_InterruptGate;
-    int_GPFault->selector = 0x08;
-
-    IDTDescEntry* int_Keyboard = (IDTDescEntry*)(idtr.Offset + 0x21 * sizeof(IDTDescEntry));
-    int_Keyboard->SetOffset((uint64_t)KeyboardInt_Handler);
-    int_Keyboard->type_attr = IDT_TA_InterruptGate;
-    int_Keyboard->selector = 0x08;
-
-    asm ("lidt %0" : : "m" (idtr));
+    asm("lidt %0"
+        :
+        : "m"(idtr));
 
     RemapPIC();
-
-    outb(PIC1_DATA, 0b11111101);
-    outb(PIC2_DATA, 0b11111111);
-
-    asm ("sti");
-
 }
 
-void bootHelper(BootInfo* bootInfo){
-
+void bootHelper(BootInfo *bootInfo)
+{
     screenWidth = bootInfo->framebuffer->Width;
     screenHeight = bootInfo->framebuffer->Height;
     uint64_t mMapEntries = bootInfo->mMapSize / bootInfo->mMapDescSize;
@@ -65,19 +55,26 @@ void bootHelper(BootInfo* bootInfo){
     GlobalAllocator.ReadEFIMemoryMap(bootInfo->mMap, bootInfo->mMapSize, bootInfo->mMapDescSize);
 
     uint64_t kernelSize = (uint64_t)&_KernelEnd - (uint64_t)&_KernelStart;
-    uint64_t kernelPages = (uint64_t)kernelSize / 4096 + 1 + 5; //add 5 just in case
+    uint64_t kernelPages = (uint64_t)kernelSize / 4096 + 1 + 5; // add 5 just in case
     GlobalAllocator.LockPages(&_KernelStart, kernelPages);
 
     uint64_t fbBase = (uint64_t)bootInfo->framebuffer->BaseAddress;
-    uint64_t fbSize = (uint64_t)bootInfo->framebuffer->BufferSize+0x1000;
-    GlobalAllocator.LockPages((void*)fbBase, fbSize / 0x1000 + 1);
+    uint64_t fbSize = (uint64_t)bootInfo->framebuffer->BufferSize + 0x1000;
+    GlobalAllocator.LockPages((void *)fbBase, fbSize / 0x1000 + 1);
 
     GDTDescriptor gdtDescriptor;
     gdtDescriptor.Size = sizeof(GDT) - 1;
     gdtDescriptor.Offset = (uint64_t)&DefaultGDT;
     LoadGDT(&gdtDescriptor);
 
-    //memset(bootInfo->framebuffer->BaseAddress, 123, bootInfo->framebuffer->BufferSize);
+    memset(bootInfo->framebuffer->BaseAddress, 1, bootInfo->framebuffer->BufferSize);
 
     PrepareInterrupts();
+
+    InitPS2Mouse();
+
+    outb(PIC1_DATA, 0b11111001);
+    outb(PIC2_DATA, 0b11101111);
+
+    asm("sti");
 }

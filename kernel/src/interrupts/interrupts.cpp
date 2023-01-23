@@ -5,11 +5,12 @@
 #include "../keyboard/KeyboardTranslation.h"
 #include "../keyboard/KeyPressType.h"
 #include "../Graphics.h"
+#include "../mouse/mouse.h"
 
-extern Graphics * graphics;
+extern Graphics *graphics;
 
 #define maxKeysDown 8
-volatile KeyPress keysPressed[maxKeysDown] = {{0, 127, 0}, {0, 127, 0}, {0, 127, 0}, {0, 127, 0}};
+volatile KeyPress keysPressed[maxKeysDown] = {{0, 127, 0}, {0, 127, 0}, {0, 127, 0}, {0, 127, 0}, {0, 127, 0}, {0, 127, 0}, {0, 127, 0}, {0, 127, 0}};
 
 __attribute__((interrupt)) void PageFault_Handler(struct interrupt_frame *frame)
 {
@@ -32,24 +33,37 @@ __attribute__((interrupt)) void GPFault_Handler(struct interrupt_frame *frame)
         ;
 }
 
+
+__attribute__((interrupt)) void MouseInt_Handler(interrupt_frame *frame)
+{
+
+    uint8_t mouseData = inb(0x60);
+
+    HandlePS2Mouse(mouseData);
+
+    PIC_EndSlave();
+}
+
 #define absScanCode(c) ((c < 0) ? 128 - (0 - c) : c)
 char scancode = 0;
 NormalKeyboardKey key;
 __attribute__((interrupt)) void KeyboardInt_Handler(struct interrupt_frame *frame)
 {
     scancode = inb(0x60);
-    key = scancode2normal(absScanCode(scancode)); 
+    key = scancode2normal(absScanCode(scancode));
     if (scancode > 0)
     {
         for (uint8_t i = 0; i < maxKeysDown; i++)
         {
-            if(keysPressed[i].key == key.key && keysPressed[i].keyType == key.keyType){ // key press is already registered
+            if (keysPressed[i].key == key.key && keysPressed[i].keyType == key.keyType)
+            { // key press is already registered
                 break;
             }
-            if(keysPressed[i].key == 0 && keysPressed[i].keyType == 127){
-                keysPressed[i].key = key.key; 
-                keysPressed[i].keyType = key.keyType; 
-                keysPressed[i].timeHeld = 0; 
+            if (keysPressed[i].key == 0 && keysPressed[i].keyType == 127)
+            {
+                keysPressed[i].key = key.key;
+                keysPressed[i].keyType = key.keyType;
+                keysPressed[i].timeHeld = 0;
                 break;
             }
         }
@@ -58,9 +72,10 @@ __attribute__((interrupt)) void KeyboardInt_Handler(struct interrupt_frame *fram
     {
         for (uint8_t i = 0; i < maxKeysDown; i++)
         {
-            if(keysPressed[i].key == key.key && keysPressed[i].keyType == key.keyType){
-                keysPressed[i].key = 0; 
-                keysPressed[i].keyType = 127; 
+            if (keysPressed[i].key == key.key && keysPressed[i].keyType == key.keyType)
+            {
+                keysPressed[i].key = 0;
+                keysPressed[i].keyType = 127;
                 keysPressed[i].timeHeld = 0;
             }
         }
