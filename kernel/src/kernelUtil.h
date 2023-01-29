@@ -1,6 +1,6 @@
 #pragma once
 #include "BitOSDatatypes.h"
-#include "PageFrameAllocator.h"
+#include "paging/PageFrameAllocator.h"
 #include "mouse/mouse.h"
 #include "renderWindow.h"
 #include "efiMemory.h"
@@ -9,6 +9,8 @@
 #include "interrupts/interrupts.h"
 #include "portIO.h"
 #include "keyboard/KeyPressType.h"
+#include "pci/acpi.h"
+#include "pci/pci.h"
 
 extern uint64_t screenWidth;
 extern uint64_t screenHeight;
@@ -46,6 +48,22 @@ void PrepareInterrupts()
     RemapPIC();
 }
 
+void PrepareACPI(BootInfo *bootInfo)
+{
+    ACPI::SDTHeader *xsdt = (ACPI::SDTHeader *)(bootInfo->rsdp->XSDTAddress);
+
+    ACPI::MCFGHeader *mcfg = (ACPI::MCFGHeader *)ACPI::FindTable(xsdt, (char *)"MCFG");
+
+    for (int t = 0; t < 4; t++)
+    {
+        graphics->putChar(0, mcfg->Header.Signature[t], t * 10, 0);
+    }
+
+    PCI::EnumeratePCI(mcfg);
+    while (true)
+        ;
+}
+
 void bootHelper(BootInfo *bootInfo)
 {
     screenWidth = bootInfo->framebuffer->Width;
@@ -67,11 +85,13 @@ void bootHelper(BootInfo *bootInfo)
     gdtDescriptor.Offset = (uint64_t)&DefaultGDT;
     LoadGDT(&gdtDescriptor);
 
-    memset(bootInfo->framebuffer->BaseAddress, 1, bootInfo->framebuffer->BufferSize);
+    memset(bootInfo->framebuffer->BaseAddress, 0xff, bootInfo->framebuffer->BufferSize);
 
     PrepareInterrupts();
 
     InitPS2Mouse();
+
+    PrepareACPI(bootInfo);
 
     outb(PIC1_DATA, 0b11111001);
     outb(PIC2_DATA, 0b11101111);

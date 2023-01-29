@@ -40,111 +40,67 @@ uint8_t MouseRead()
 
 uint8_t MouseCycle = 0;
 uint8_t MousePacket[4];
-bool MousePacketReady = false;
+
 Point MousePosition;
 void HandlePS2Mouse(uint8_t data)
 {
-    ProcessMousePacket();
     switch (MouseCycle)
     {
     case 0:
-        if (MousePacketReady)
-            break;
         if (data & 0b00001000 == 0)
             break;
         MousePacket[0] = data;
         MouseCycle++;
         break;
     case 1:
-        if (MousePacketReady)
-            break;
         MousePacket[1] = data;
         MouseCycle++;
         break;
     case 2:
-        if (MousePacketReady)
-            break;
         MousePacket[2] = data;
-        MousePacketReady = true;
         MouseCycle = 0;
+        ProcessMousePacket();
         break;
     }
 }
 
+bool xNegative = false;
+bool yNegative = false;
+bool xOverflow = false;
+bool yOverflow = false;
 void ProcessMousePacket()
 {
-    if (!MousePacketReady)
-        return;
-
-    // graphics->clear(0x00ff00);
-    // graphics->clear(0x0000ff);
-
-    bool xNegative, yNegative, xOverflow, yOverflow;
-
-    if (MousePacket[0] & PS2XSign)
-    {
-        xNegative = true;
-    }
-    else
-        xNegative = false;
-
-    if (MousePacket[0] & PS2YSign)
-    {
-        yNegative = true;
-    }
-    else
-        yNegative = false;
-
-    if (MousePacket[0] & PS2XOverflow)
-    {
-        xOverflow = true;
-    }
-    else
-        xOverflow = false;
-
-    if (MousePacket[0] & PS2YOverflow)
-    {
-        yOverflow = true;
-    }
-    else
-        yOverflow = false;
+    xNegative = (MousePacket[0] & PS2XSign) != 0;
+    yNegative = (MousePacket[0] & PS2YSign) != 0;
+    xOverflow = (MousePacket[0] & PS2XOverflow) != 0;
+    yOverflow = (MousePacket[0] & PS2YOverflow) != 0;
 
     if (!xNegative)
     {
         MousePosition.X += MousePacket[1];
         if (xOverflow)
-        {
             MousePosition.X += 255;
-        }
     }
     else
     {
         MousePacket[1] = 256 - MousePacket[1];
         MousePosition.X -= MousePacket[1];
         if (xOverflow)
-        {
             MousePosition.X -= 255;
-        }
     }
-
     if (!yNegative)
     {
         MousePosition.Y -= MousePacket[2];
         if (yOverflow)
-        {
             MousePosition.Y -= 255;
-        }
     }
     else
     {
         MousePacket[2] = 256 - MousePacket[2];
         MousePosition.Y += MousePacket[2];
         if (yOverflow)
-        {
             MousePosition.Y += 255;
-        }
     }
-
     if (MousePosition.X < 0)
         MousePosition.X = 0;
     if (MousePosition.X > graphics->TargetFramebuffer->Width - 8)
@@ -155,9 +111,7 @@ void ProcessMousePacket()
     if (MousePosition.Y > graphics->TargetFramebuffer->Height - 16)
         MousePosition.Y = graphics->TargetFramebuffer->Height - 16;
 
-    graphics->putChar(0, 'a', MousePosition.X, MousePosition.Y);
-
-    MousePacketReady = false;
+    graphics->putChar(0, '^', MousePosition.X, MousePosition.Y); //mouse pointer
 }
 
 void InitPS2Mouse()

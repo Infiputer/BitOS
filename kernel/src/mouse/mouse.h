@@ -13,6 +13,6 @@
 
 void InitPS2Mouse();
 void HandlePS2Mouse(uint8_t data);
-void ProcessMousePacket() ;
+void ProcessMousePacket();
 extern Point MousePosition;
-extern Graphics* graphics;
+extern Graphics * graphics;
