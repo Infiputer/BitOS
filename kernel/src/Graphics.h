@@ -18,6 +18,7 @@ class Graphics{
             totalScreenSize = (TargetFramebuffer->PixelsPerScanLine)*(TargetFramebuffer->Height);
             pixPtr = (unsigned int*)TargetFramebuffer->BaseAddress;
         }
+        
         void clear(unsigned int color){
             for(unsigned int i = 0; i < totalScreenSize; i++){
                 *(unsigned int*)(pixPtr + i) = color;

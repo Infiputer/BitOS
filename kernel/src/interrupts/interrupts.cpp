@@ -33,7 +33,6 @@ __attribute__((interrupt)) void GPFault_Handler(struct interrupt_frame *frame)
         ;
 }
 
-
 __attribute__((interrupt)) void MouseInt_Handler(interrupt_frame *frame)
 {
     uint8_t mouseData = inb(0x60);
@@ -52,8 +51,8 @@ __attribute__((interrupt)) void KeyboardInt_Handler(struct interrupt_frame *fram
     {
         for (uint8_t i = 0; i < maxKeysDown; i++)
         {
-            if (keysPressed[i].key == key.key && keysPressed[i].keyType == key.keyType)
-            { // key press is already registered
+            if (keysPressed[i].key == key.key && keysPressed[i].keyType == key.keyType) // key press is already registered
+            {
                 break;
             }
             if (keysPressed[i].key == 0 && keysPressed[i].keyType == 127)

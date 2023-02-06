@@ -11,6 +11,9 @@
 #include "keyboard/KeyPressType.h"
 #include "pci/acpi.h"
 #include "pci/pci.h"
+#include "memory/memory.h"
+#include "panic.h"
+#include "memory/heap.h"
 
 extern uint64_t screenWidth;
 extern uint64_t screenHeight;
@@ -54,14 +57,7 @@ void PrepareACPI(BootInfo *bootInfo)
 
     ACPI::MCFGHeader *mcfg = (ACPI::MCFGHeader *)ACPI::FindTable(xsdt, (char *)"MCFG");
 
-    for (int t = 0; t < 4; t++)
-    {
-        graphics->putChar(0, mcfg->Header.Signature[t], t * 10, 0);
-    }
-
     PCI::EnumeratePCI(mcfg);
-    while (true)
-        ;
 }
 
 void bootHelper(BootInfo *bootInfo)
@@ -73,7 +69,7 @@ void bootHelper(BootInfo *bootInfo)
     GlobalAllocator.ReadEFIMemoryMap(bootInfo->mMap, bootInfo->mMapSize, bootInfo->mMapDescSize);
 
     uint64_t kernelSize = (uint64_t)&_KernelEnd - (uint64_t)&_KernelStart;
-    uint64_t kernelPages = (uint64_t)kernelSize / 4096 + 1 + 5; // add 5 just in case
+    uint64_t kernelPages = (uint64_t)kernelSize / 4096 + 1; 
     GlobalAllocator.LockPages(&_KernelStart, kernelPages);
 
     uint64_t fbBase = (uint64_t)bootInfo->framebuffer->BaseAddress;
@@ -87,14 +83,28 @@ void bootHelper(BootInfo *bootInfo)
 
     memset(bootInfo->framebuffer->BaseAddress, 0xff, bootInfo->framebuffer->BufferSize);
 
+    InitializeHeap((void*)0x1000000, 0x10);
+
     PrepareInterrupts();
+
+    // PrepareACPI(bootInfo);
 
     InitPS2Mouse();
 
-    PrepareACPI(bootInfo);
+    graphics->print(0, "Checking memory...", 0, 0);
+    graphics->print(0, to_string((uint64_t)malloc(0x8000)), 0, 20);
+    void* address = malloc(0x8000);
+    graphics->print(0, to_string((uint64_t)address), 0, 40);
+    graphics->print(0, to_string((uint64_t)malloc(0x100)), 0, 60);
+    free(address);
+    graphics->print(0, to_string((uint64_t)malloc(0x800)), 0, 80);
+
+
+    while(true);
 
     outb(PIC1_DATA, 0b11111001);
     outb(PIC2_DATA, 0b11101111);
 
     asm("sti");
+
 }

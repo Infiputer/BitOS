@@ -19,13 +19,13 @@ extern uint64_t screenHeight;
 #define maxKeysDown 8
 extern volatile KeyPress keysPressed[maxKeysDown];
 
-extern "C" void _start(BootInfo *bootInfo)
+extern "C" void _start(BootInfo *bootInfo) // Start function
 {
     Graphics g = Graphics(bootInfo->framebuffer, bootInfo->psf1_Font);
     graphics = &g;
     bootHelper(bootInfo);
     graphics->clear(0xffffff);
     graphics->print(0, "Kernel Initalized", 0, 0);
-    while (true);
+    while(true);
     return;
 }

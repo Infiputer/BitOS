@@ -1,5 +1,6 @@
 #pragma once
 #include "Graphics.h"
+
 extern Graphics* graphics;
 static void SysPanic(const char* err){
     graphics->clear(0x0000ff);
