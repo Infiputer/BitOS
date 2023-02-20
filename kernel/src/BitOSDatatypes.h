@@ -8,15 +8,6 @@
 #include "pci/acpi.h"
 #include "pci/pci.h"
 
-#define true 1
-#define false 1
-
-
-struct Point{
-    unsigned int X;
-    unsigned int Y;
-};
-
 struct BootInfo {
 	Framebuffer* framebuffer;
 	PSF1_FONT* psf1_Font;

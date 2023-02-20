@@ -3,8 +3,6 @@
 #include "BitOSUtilities.h"
 #include "GraphicsHelper.h"
 
-extern Graphics* graphics;
-
 struct RGB {
     uint8_t red;
     uint8_t green;
@@ -17,7 +15,7 @@ struct Window{
     uint64_t y;
     uint64_t width;
     uint64_t height;
-    uint8_t properties; //{full minimize highlighted}, {maximize/slight minimize hightlight}, {maximise(1) or slight minimize(0)}, {window closed highlighted}
+    uint8_t properties; //{full minimize highlighted}, {maximize/slight minimize hightlight}, {maximize(1) or slight minimize(0)}, {window closed highlighted}
     RGB* framebuffer;
 };
 

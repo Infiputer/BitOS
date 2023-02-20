@@ -4,8 +4,6 @@
 #include "../Graphics.h"
 #include "../ToString.h"
 
-extern Graphics *graphics;
-
 namespace PCI{
     struct PCIDeviceHeader{
         uint16_t VendorID;

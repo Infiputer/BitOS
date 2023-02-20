@@ -18,7 +18,7 @@ extern uint64_t screenHeight;
 
 #define maxKeysDown 8
 extern volatile KeyPress keysPressed[maxKeysDown];
-
+Window window = {"Test", 20, 20, 100, 50, 0b1111};
 extern "C" void _start(BootInfo *bootInfo) // Start function
 {
     Graphics g = Graphics(bootInfo->framebuffer, bootInfo->psf1_Font);
@@ -26,6 +26,9 @@ extern "C" void _start(BootInfo *bootInfo) // Start function
     bootHelper(bootInfo);
     graphics->clear(0xffffff);
     graphics->print(0, "Kernel Initalized", 0, 0);
-    while(true);
+    renderWindow(&window);
+    while(true){
+        ProcessMousePacket();
+    }
     return;
 }

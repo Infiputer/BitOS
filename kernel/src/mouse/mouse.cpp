@@ -35,7 +35,6 @@ uint8_t MousePacket[4];
 bool MousePacketReady = false;
 Point MousePosition;
 void HandlePS2Mouse(uint8_t data){
-    ProcessMousePacket();
     switch(MouseCycle){
         case 0:
             if (MousePacketReady) break;
@@ -112,8 +111,7 @@ void ProcessMousePacket(){
         if (MousePosition.Y < 0) MousePosition.Y = 0;
         if (MousePosition.Y > graphics->TargetFramebuffer->Height-16) MousePosition.Y = graphics->TargetFramebuffer->Height-16;
         
-        graphics->putChar(0, 'a', MousePosition.X, MousePosition.Y);
-
+        graphics->putChar(0x0, '^', MousePosition.X, MousePosition.Y);
         MousePacketReady = false;
 }
 

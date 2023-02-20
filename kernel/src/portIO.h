@@ -1,5 +1,8 @@
 #pragma once
 
+#include <stddef.h>
+#include <stdint.h>
+
 #define INT_DISABLE 0
 #define INT_ENABLE 0x200
 #define PIC1 0x20
@@ -16,13 +19,12 @@ static void outb(short port, char data)
         return;
 }
 
-static char inb(short port)
-{
-        char res;
-        asm volatile("inb %1, %0"
-                     : "=a"(res)
-                     : "Nd"(port));
-        return res;
+static uint8_t inb(uint16_t port){
+    uint8_t returnVal;
+    asm volatile ("inb %1, %0"
+    : "=a"(returnVal)
+    : "Nd"(port));
+    return returnVal;
 }
 
 /**************** SEND/RECEIVE WORD ******************/

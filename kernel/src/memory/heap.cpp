@@ -22,6 +22,11 @@ void InitializeHeap(void* heapAddress, size_t pageCount){
     LastHdr = startSeg;
 }
 
+/**
+ * Free dynamically allocated memory at 'address'.
+ *
+ * @param address Pointer to the memory to be freed
+ */
 void free(void* address){
     HeapSegHdr* segment = (HeapSegHdr*)address - 1;
     segment->free = true;
@@ -29,6 +34,13 @@ void free(void* address){
     segment->CombineBackward();
 }
 
+/**
+ * Allocate 'size' bytes of memory dynamically.
+ *
+ * @param size The number of bytes to allocate
+ *
+ * @return Pointer to the newly allocated memory, or NULL if allocation fails
+ */
 void* malloc(size_t size){
     if (size % 0x10 > 0){ // it is not a multiple of 0x10
         size -= (size % 0x10);

@@ -4,79 +4,69 @@
 #include "GraphicsHelper.h"
 #include <stdint.h>
 
-class Graphics{
-    public:
-        Framebuffer* TargetFramebuffer;
-        PSF1_FONT* PSF1_Font;
-        unsigned int* pixPtr;
-        uint64_t totalScreenSize;
-        
-        Graphics(Framebuffer* targetFramebuffer, PSF1_FONT* psf1_Font)
-        {
-            TargetFramebuffer = targetFramebuffer;
-            PSF1_Font = psf1_Font;
-            totalScreenSize = (TargetFramebuffer->PixelsPerScanLine)*(TargetFramebuffer->Height);
-            pixPtr = (unsigned int*)TargetFramebuffer->BaseAddress;
-        }
-        
-        void clear(unsigned int color){
-            for(unsigned int i = 0; i < totalScreenSize; i++){
-                *(unsigned int*)(pixPtr + i) = color;
-            }
-        }
-        void drawPixel(unsigned int color, unsigned int x, unsigned y){
-            *(unsigned int*)((unsigned int*)pixPtr + x + (y * TargetFramebuffer->PixelsPerScanLine)) = color;
-        }
-        void fillRect(unsigned int color, unsigned int xOff, unsigned int yOff, unsigned int width, unsigned int height){
-            for(unsigned drawX = xOff; drawX < xOff+width; drawX++){
-                for(unsigned drawY = yOff; drawY < yOff+height; drawY++){
-                    drawPixel(color, drawX, drawY);
-                }   
-            }
-        }
+class Graphics
+{
+public:
+    Framebuffer *TargetFramebuffer;
+    PSF1_FONT *PSF1_Font;
+    unsigned int *pixPtr;
+    uint64_t totalScreenSize;
 
-        void drawRect(unsigned int color, unsigned int x, unsigned int y, unsigned int width, unsigned int height){
-            for(uint64_t x1 = x; x1 < x+width+1; x1++){
-                drawPixel(color, x1, y);
-                drawPixel(color, x1, y+height);
-            }
-            for(uint64_t y1 = y; y1 < y+height; y1++){
-                drawPixel(color, x, y1);
-                drawPixel(color, x + width, y1);
-            }
-        }
+    Graphics(Framebuffer *targetFramebuffer, PSF1_FONT *psf1_Font);
+    /**
+     * @brief Clear the screen with a given color
+     * @param color The color to fill the screen with in (0xRRGGBB)
+     */
+    void clear(unsigned int color);
+    /**
+     * Function to draw a pixel on the screen
+     * @param color The color of the pixel to be drawn
+     * @param x The x-coordinate of the pixel to be drawn
+     * @param y The y-coordinate of the pixel to be drawn
+     */
+    void drawPixel(unsigned int color, unsigned int x, unsigned y);
+    /**
+     * fills a rectangle on the framebuffer with specified color
+     * @param color unsigned integer that defines the color of the rectangle
+     * @param xOff unsigned integer that defines the X offset of the rectangle
+     * @param yOff unsigned integer that defines the Y offset of the rectangle
+     * @param width unsigned integer that defines the width of the rectangle
+     * @param height unsigned integer that defines the height of the rectangle
+     */
+    void fillRect(unsigned int color, unsigned int xOff, unsigned int yOff, unsigned int width, unsigned int height);
 
-        void putChar(unsigned int color, char chr, unsigned int xOff, unsigned int yOff, float width = 1, float height = 1)
-        {
-            char* fontPtr = (char*)PSF1_Font->glyphBuffer + (chr * PSF1_Font->psf1_Header->charsize);
-            for (unsigned long y = yOff; y < yOff + 20; y++){
-                for (unsigned long x = xOff; x < xOff+8; x++){
-                    if ((*fontPtr & (0b10000000 >> (x - xOff))) > 0){
-                            *(unsigned int*)(pixPtr + x + (y * TargetFramebuffer->PixelsPerScanLine)) = color;
-                        }
+    /**
+     * outlines a rectangle on the framebuffer with specified color
+     * @param color unsigned integer that defines the color of the rectangle
+     * @param xOff unsigned integer that defines the X offset of the rectangle
+     * @param yOff unsigned integer that defines the Y offset of the rectangle
+     * @param width unsigned integer that defines the width of the rectangle
+     * @param height unsigned integer that defines the height of the rectangle
+     */
+    void drawRect(unsigned int color, unsigned int x, unsigned int y, unsigned int width, unsigned int height);
 
-                }
-                fontPtr++;
-            }
-        }
+    /**
+    Renders a single character to the screen at the specified coordinates with the given color and scaling.
+    @param color The color to use when rendering the character.
+    @param chr The character to render.
+    @param xOff The x-coordinate to start drawing the character at.
+    @param yOff The y-coordinate to start drawing the character at.
+    @param width The width scaling factor to apply to the character.
+    @param height The height scaling factor to apply to the character.
+    */
+    void putChar(unsigned int color, char chr, unsigned int xOff, unsigned int yOff, float width = 1, float height = 1);
 
-
-        unsigned int print(unsigned int color, const char* str, unsigned int xOff, unsigned int yOff, float width=1, float height=1)
-        {
-            
-            char* chr = (char*)str;
-            while(*chr != 0){
-                putChar(color, *chr, xOff, yOff, width, height);
-                xOff+=8;
-                if(xOff > TargetFramebuffer->Width)
-                {
-                    xOff = 0;
-                    yOff += 20;
-                }
-                chr++;
-            }
-            return xOff;
-        }    
+    /**
+     *prints a string of text to the screen.
+     * @param color The color to use for the text.
+     * @param str The string to print.
+     * @param xOff The x-offset of the text on the screen.
+     * @param yOff The y-offset of the text on the screen.
+     * @param width The width of each character (defaults to 1).
+     * @param height The height of each character (defaults to 1).
+     * @return The x-offset after printing the text.
+     */
+    unsigned int print(unsigned int color, const char *str, unsigned int xOff, unsigned int yOff, float width = 1, float height = 1);
 };
 
-
+extern Graphics *graphics;

@@ -7,11 +7,18 @@
 #include "../Graphics.h"
 #include "../mouse/mouse.h"
 
-extern Graphics *graphics;
 
 #define maxKeysDown 8
 volatile KeyPress keysPressed[maxKeysDown] = {{0, 127, 0}, {0, 127, 0}, {0, 127, 0}, {0, 127, 0}, {0, 127, 0}, {0, 127, 0}, {0, 127, 0}, {0, 127, 0}};
 
+/**
+ * Page Fault interrupt handler.
+ *
+ * @param frame Pointer to the interrupt frame
+ *
+ * This function is called when a page fault is detected. It prints an error
+ * message and enters an infinite loop, as the system panic is triggered.
+ */
 __attribute__((interrupt)) void PageFault_Handler(struct interrupt_frame *frame)
 {
     SysPanic("Page Fault Detected");
@@ -19,6 +26,14 @@ __attribute__((interrupt)) void PageFault_Handler(struct interrupt_frame *frame)
         ;
 }
 
+/**
+ * Double Fault interrupt handler.
+ *
+ * @param frame Pointer to the interrupt frame
+ *
+ * This function is called when a Double fault is detected. It prints an error
+ * message and enters an infinite loop, as the system panic is triggered.
+ */
 __attribute__((interrupt)) void DoubleFault_Handler(struct interrupt_frame *frame)
 {
     SysPanic("Double Fault Detected");
@@ -26,23 +41,45 @@ __attribute__((interrupt)) void DoubleFault_Handler(struct interrupt_frame *fram
         ;
 }
 
+/**
+ * General Protectio Fault interrupt handler.
+ *
+ * @param frame Pointer to the interrupt frame
+ *
+ * This function is called when a General Protection fault is detected. It prints an error
+ * message and enters an infinite loop, as the system panic is triggered.
+ */
 __attribute__((interrupt)) void GPFault_Handler(struct interrupt_frame *frame)
 {
     SysPanic("General Protection Fault Detected");
-    while (true)
-        ;
+    // while (true)
+    //     ;
 }
 
-__attribute__((interrupt)) void MouseInt_Handler(interrupt_frame *frame)
-{
+/**
+ * Interrupt handler for PS/2 Mouse event
+ *
+ * @param frame Pointer to the interrupt frame
+ */
+__attribute__((interrupt)) void MouseInt_Handler(interrupt_frame* frame){
+
     uint8_t mouseData = inb(0x60);
     HandlePS2Mouse(mouseData);
     PIC_EndSlave();
 }
 
 #define absScanCode(c) ((c < 0) ? 128 - (0 - c) : c)
+
+// Scancode of the Keyboard Interrupt handler
 char scancode = 0;
+//Normal key for Keyboard Interrupt handler
 NormalKeyboardKey key;
+
+/**
+ * Interrupt handler for PS/2 Keyboard event
+ *
+ * @param frame Pointer to the interrupt frame
+ */
 __attribute__((interrupt)) void KeyboardInt_Handler(struct interrupt_frame *frame)
 {
     scancode = inb(0x60);
@@ -80,11 +117,17 @@ __attribute__((interrupt)) void KeyboardInt_Handler(struct interrupt_frame *fram
     PIC_EndMaster();
 }
 
+/**
+ * Sends End-of-Interrupt signal to Master PIC
+ */
 void PIC_EndMaster()
 {
     outb(PIC1_COMMAND, PIC_EOI);
 }
 
+/**
+ * Sends End-of-Interrupt signal to both Master and Slave PIC
+ */
 void PIC_EndSlave()
 {
     outb(PIC2_COMMAND, PIC_EOI);

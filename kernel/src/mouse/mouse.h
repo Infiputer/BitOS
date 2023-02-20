@@ -1,7 +1,8 @@
 #pragma once
 #include "../portIO.h"
-#include "../BitOSDatatypes.h"
+#include "../math.h"
 #include "../Graphics.h"
+#include "../ToString.h"
 
 #define PS2Leftbutton 0b00000001
 #define PS2Middlebutton 0b00000010
@@ -15,4 +16,3 @@ void InitPS2Mouse();
 void HandlePS2Mouse(uint8_t data);
 void ProcessMousePacket();
 extern Point MousePosition;
-extern Graphics * graphics;
