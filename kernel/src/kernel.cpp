@@ -6,11 +6,12 @@
 #include "Graphics.h"
 #include "portIO.h"
 #include "keyboard/KeyboardTranslation.h"
-#include "renderWindow.h"
+#include "panels/renderPanel.h"
 #include "kernelUtil.h"
 #include "GraphicsHelper.h"
 #include "keyboard/KeyPressType.h"
 #include "mouse/mouse.h"
+#include "panels/panel.h"
 
 Graphics *graphics;
 extern uint64_t screenWidth;
@@ -18,7 +19,7 @@ extern uint64_t screenHeight;
 
 #define maxKeysDown 8
 extern volatile KeyPress keysPressed[maxKeysDown];
-Window window = {"Test", 20, 20, 100, 50, 0b1111};
+
 extern "C" void _start(BootInfo *bootInfo) // Start function
 {
     Graphics g = Graphics(bootInfo->framebuffer, bootInfo->psf1_Font);
@@ -26,9 +27,10 @@ extern "C" void _start(BootInfo *bootInfo) // Start function
     bootHelper(bootInfo);
     graphics->clear(0xffffff);
     graphics->print(0, "Kernel Initalized", 0, 0);
-    renderWindow(&window);
+    
+    renderPanels();
     while(true){
-        ProcessMousePacket();
+        asm("hlt");
     }
     return;
 }

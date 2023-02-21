@@ -7,7 +7,6 @@
 #include "../Graphics.h"
 #include "../mouse/mouse.h"
 
-
 #define maxKeysDown 8
 volatile KeyPress keysPressed[maxKeysDown] = {{0, 127, 0}, {0, 127, 0}, {0, 127, 0}, {0, 127, 0}, {0, 127, 0}, {0, 127, 0}, {0, 127, 0}, {0, 127, 0}};
 
@@ -23,7 +22,7 @@ __attribute__((interrupt)) void PageFault_Handler(struct interrupt_frame *frame)
 {
     SysPanic("Page Fault Detected");
     while (true)
-        ;
+        asm("hlt");
 }
 
 /**
@@ -38,7 +37,7 @@ __attribute__((interrupt)) void DoubleFault_Handler(struct interrupt_frame *fram
 {
     SysPanic("Double Fault Detected");
     while (true)
-        ;
+        asm("hlt");
 }
 
 /**
@@ -52,8 +51,9 @@ __attribute__((interrupt)) void DoubleFault_Handler(struct interrupt_frame *fram
 __attribute__((interrupt)) void GPFault_Handler(struct interrupt_frame *frame)
 {
     SysPanic("General Protection Fault Detected");
-    // while (true)
-    //     ;
+
+    while (true)
+        asm("hlt");
 }
 
 /**
@@ -61,7 +61,8 @@ __attribute__((interrupt)) void GPFault_Handler(struct interrupt_frame *frame)
  *
  * @param frame Pointer to the interrupt frame
  */
-__attribute__((interrupt)) void MouseInt_Handler(interrupt_frame* frame){
+__attribute__((interrupt)) void MouseInt_Handler(interrupt_frame *frame)
+{
 
     uint8_t mouseData = inb(0x60);
     HandlePS2Mouse(mouseData);
@@ -72,7 +73,7 @@ __attribute__((interrupt)) void MouseInt_Handler(interrupt_frame* frame){
 
 // Scancode of the Keyboard Interrupt handler
 char scancode = 0;
-//Normal key for Keyboard Interrupt handler
+// Normal key for Keyboard Interrupt handler
 NormalKeyboardKey key;
 
 /**

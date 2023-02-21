@@ -3,7 +3,7 @@
 #include "FontDefinitions.h"
 #include "GraphicsHelper.h"
 #include <stdint.h>
-
+#include "math.h"
 class Graphics
 {
 public:
@@ -11,6 +11,9 @@ public:
     PSF1_FONT *PSF1_Font;
     unsigned int *pixPtr;
     uint64_t totalScreenSize;
+
+    uint32_t MouseCursorBuffer[16 * 16];
+    uint32_t MouseCursorBufferAfter[16 * 16];
 
     Graphics(Framebuffer *targetFramebuffer, PSF1_FONT *psf1_Font);
     /**
@@ -67,6 +70,11 @@ public:
      * @return The x-offset after printing the text.
      */
     unsigned int print(unsigned int color, const char *str, unsigned int xOff, unsigned int yOff, float width = 1, float height = 1);
+    uint32_t GetPix(uint32_t x, uint32_t y);
+
+    void DrawOverlayMouseCursor(uint8_t *mouseCursor, Point position);
+    void ClearMouseCursor(uint8_t *mouseCursor, Point position);
+    bool MouseDrawn;
 };
 
 extern Graphics *graphics;

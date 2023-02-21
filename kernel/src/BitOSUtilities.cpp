@@ -1,4 +1,4 @@
-#include <stddef.h>
+#include "BitOSUtilities.h"
 /** 
  * Converts an integer to a string representation in a specified base
  * 

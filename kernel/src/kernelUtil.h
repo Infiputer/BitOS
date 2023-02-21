@@ -2,7 +2,6 @@
 #include "BitOSDatatypes.h"
 #include "paging/PageFrameAllocator.h"
 #include "mouse/mouse.h"
-#include "renderWindow.h"
 #include "efiMemory.h"
 #include "gdt/gdt.h"
 #include "interrupts/IDT.h"
@@ -14,6 +13,7 @@
 #include "memory/memory.h"
 #include "panic.h"
 #include "memory/heap.h"
+#include "panels/panel.h"
 
 extern uint64_t screenWidth;
 extern uint64_t screenHeight;
@@ -90,6 +90,8 @@ void bootHelper(BootInfo *bootInfo)
     // PrepareACPI(bootInfo);
 
     InitPS2Mouse();
+
+    InitPanels();
 
     graphics->print(0, "Checking memory...", 0, 0);
     graphics->print(0, to_string((uint64_t)malloc(0x8000)), 0, 20);
