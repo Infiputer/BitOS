@@ -7,6 +7,12 @@
 #include "../Graphics.h"
 #include "../mouse/mouse.h"
 
+#define numberOfNopsTillErrorExit 60000
+uint16_t haltNumber = 0;
+
+#define maxNumberOfErrorsTillHalt 1000
+uint64_t previousNumberOfErrors = 0;
+
 #define maxKeysDown 8
 volatile KeyPress keysPressed[maxKeysDown] = {{0, 127, 0}, {0, 127, 0}, {0, 127, 0}, {0, 127, 0}, {0, 127, 0}, {0, 127, 0}, {0, 127, 0}, {0, 127, 0}};
 
@@ -21,8 +27,17 @@ volatile KeyPress keysPressed[maxKeysDown] = {{0, 127, 0}, {0, 127, 0}, {0, 127,
 __attribute__((interrupt)) void PageFault_Handler(struct interrupt_frame *frame)
 {
     SysPanic("Page Fault Detected");
-    while (true)
-        asm("hlt");
+    
+    if(previousNumberOfErrors > maxNumberOfErrorsTillHalt){
+        while(true){
+            asm("hlt");
+        }
+    }
+
+    for(haltNumber = 0; haltNumber < numberOfNopsTillErrorExit; haltNumber++)
+        asm("nop");
+
+    previousNumberOfErrors++;
 }
 
 /**
@@ -36,8 +51,16 @@ __attribute__((interrupt)) void PageFault_Handler(struct interrupt_frame *frame)
 __attribute__((interrupt)) void DoubleFault_Handler(struct interrupt_frame *frame)
 {
     SysPanic("Double Fault Detected");
-    while (true)
-        asm("hlt");
+
+    if(previousNumberOfErrors > maxNumberOfErrorsTillHalt){
+        while(true){
+            asm("hlt");
+        }
+    }
+
+    for(haltNumber = 0; haltNumber < numberOfNopsTillErrorExit; haltNumber++)
+        asm("nop");
+    previousNumberOfErrors++;
 }
 
 /**
@@ -52,8 +75,15 @@ __attribute__((interrupt)) void GPFault_Handler(struct interrupt_frame *frame)
 {
     SysPanic("General Protection Fault Detected");
 
-    while (true)
-        asm("hlt");
+    if(previousNumberOfErrors > maxNumberOfErrorsTillHalt){
+        while(true){
+            asm("hlt");
+        }
+    }
+
+    for(haltNumber = 0; haltNumber < numberOfNopsTillErrorExit; haltNumber++)
+        asm("nop");
+    previousNumberOfErrors++;
 }
 
 /**

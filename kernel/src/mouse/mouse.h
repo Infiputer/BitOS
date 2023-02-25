@@ -17,4 +17,5 @@ extern uint8_t MousePointer[];
 void InitPS2Mouse();
 void HandlePS2Mouse(uint8_t data);
 void ProcessMousePacket();
+void renderMouse();
 extern Point MousePosition;

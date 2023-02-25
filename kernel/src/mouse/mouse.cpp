@@ -197,13 +197,18 @@ void ProcessMousePacket()
     if (MousePosition.Y > graphics->TargetFramebuffer->Height - 16)
         MousePosition.Y = graphics->TargetFramebuffer->Height - 16;
 
-    graphics->ClearMouseCursor(MousePointer, MousePositionOld);
-    graphics->DrawOverlayMouseCursor(MousePointer, MousePosition);
+    renderMouse();
 
+    CheckPanelHover(MousePosition.X, MousePosition.Y);
+    
     MousePacketReady = false;
     MousePositionOld = MousePosition;
 
-    CheckPanelHover(MousePosition.X, MousePosition.Y);
+}
+
+void renderMouse(){
+    graphics->ClearMouseCursor(MousePointer, MousePositionOld);
+    graphics->DrawOverlayMouseCursor(MousePointer, MousePosition);
 }
 
 void InitPS2Mouse()

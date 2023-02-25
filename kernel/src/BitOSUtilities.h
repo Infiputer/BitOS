@@ -42,3 +42,15 @@ int strcmp(const char *s1, const char *s2);
 * @return size_t The length of the string
 */
 size_t strlen(const char *str);
+
+/**
+ * Sets or clears a bit in an integer value based on the given bit index and value.
+ *
+ * @param num A pointer to the integer value to modify.
+ * @param bitIndex The index of the bit to set or clear (0 is the least significant bit).
+ * @param bitValue The value to set or clear the bit to (0 clears the bit, non-zero sets the bit).
+ */
+uint8_t setBit(uint8_t num, int bitIndex, bool bitValue);
+
+
+

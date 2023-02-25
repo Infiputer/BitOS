@@ -14,5 +14,10 @@ struct Panel{
 };
 
 void InitPanels();
+/*
+* changes colors of buttons, based on mouse hover
+* @param mouseX mouse position X
+* @param mouseY mouse position Y
+*/ 
 void CheckPanelHover(uint32_t mouseX, uint32_t mouseY);
 void renderPanels();
