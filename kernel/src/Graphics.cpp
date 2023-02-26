@@ -4,7 +4,7 @@ Graphics::Graphics(Framebuffer *targetFramebuffer, PSF1_FONT *psf1_Font)
     TargetFramebuffer = targetFramebuffer;
     PSF1_Font = psf1_Font;
     totalScreenSize = (TargetFramebuffer->PixelsPerScanLine) * (TargetFramebuffer->Height);
-    pixPtr = (unsigned int *)TargetFramebuffer->BaseAddress;
+    pixPtr = (uint32_t *)TargetFramebuffer->BaseAddress;
 }
 uint32_t Graphics::GetPix(uint32_t x, uint32_t y)
 {
@@ -61,74 +61,75 @@ void Graphics::DrawOverlayMouseCursor(uint8_t *mouseCursor, Point position)
                 uint8_t r = (colorCode >> 16) & 0xFF;
                 uint8_t g = (colorCode >> 8) & 0xFF;
                 uint8_t b = colorCode & 0xFF;
-                drawPixel(((r+g+b)/3 > 20)?0x00001f:0xefffef, position.X + x, position.Y + y);
+                drawPixel(((r + g + b) / 3 > 20) ? 0x00001f : 0xefffef, position.X + x, position.Y + y);
                 MouseCursorBufferAfter[x + y * 16] = GetPix(position.X + x, position.Y + y);
             }
         }
     }
     MouseDrawn = true;
 }
-void Graphics::clear(unsigned int color)
+void Graphics::clear(uint32_t color)
 {
-    for (unsigned int i = 0; i < totalScreenSize; i++)
+    for (uint32_t i = 0; i < totalScreenSize; i++)
     {
-        *(unsigned int *)(pixPtr + i) = color;
+        *(uint32_t *)(pixPtr + i) = color;
     }
 }
-void Graphics::drawPixel(unsigned int color, unsigned int x, unsigned y)
+void Graphics::drawPixel(uint32_t color, uint32_t x, unsigned y)
 {
-    *(unsigned int *)((unsigned int *)pixPtr + x + (y * TargetFramebuffer->PixelsPerScanLine)) = color;
+    if (x > TargetFramebuffer->Width - 1 || y > TargetFramebuffer->Height - 1)
+        return;
+    *(uint32_t *)((uint32_t *)pixPtr + x + (y * TargetFramebuffer->PixelsPerScanLine)) = color;
 }
-void Graphics::fillRect(unsigned int color, unsigned int xOff, unsigned int yOff, unsigned int width, unsigned int height)
+void Graphics::fillRect(uint32_t color, int32_t xOff, int32_t yOff, int32_t width, int32_t height)
 {
-    for (unsigned drawX = xOff; drawX < xOff + width; drawX++)
+    for (int32_t drawX = xOff; drawX < xOff + width; drawX++)
     {
-        for (unsigned drawY = yOff; drawY < yOff + height; drawY++)
+        for (int32_t drawY = yOff; drawY < yOff + height; drawY++)
         {
-            drawPixel(color, drawX, drawY);
+            if (drawX >= 0 && drawY >= 0)
+                drawPixel(color, drawX, drawY);
         }
     }
 }
-void Graphics::drawRect(unsigned int color, unsigned int x, unsigned int y, unsigned int width, unsigned int height)
+void Graphics::drawRect(uint32_t color, int32_t x, int32_t y, int32_t width, int32_t height)
 {
-    for (uint64_t x1 = x; x1 < x + width + 1; x1++)
+    for (int32_t x1 = x; x1 < x + width + 1; x1++)
     {
         drawPixel(color, x1, y);
         drawPixel(color, x1, y + height);
     }
-    for (uint64_t y1 = y; y1 < y + height; y1++)
+    for (int32_t y1 = y; y1 < y + height; y1++)
     {
         drawPixel(color, x, y1);
         drawPixel(color, x + width, y1);
     }
 }
-void Graphics::putChar(unsigned int color, char chr, unsigned int xOff, unsigned int yOff, float width, float height)
+void Graphics::putChar(uint32_t color, char chr, int32_t xOff, int32_t yOff, float width, float height)
 {
     char *fontPtr = (char *)PSF1_Font->glyphBuffer + (chr * PSF1_Font->psf1_Header->charsize);
-    for (unsigned long y = yOff; y < yOff + 20; y++)
+    for (int64_t y = yOff; y < yOff + 20; y++)
     {
-        for (unsigned long x = xOff; x < xOff + 8; x++)
+        for (int64_t x = xOff; x < xOff + 8; x++)
         {
             if ((*fontPtr & (0b10000000 >> (x - xOff))) > 0)
             {
-                *(unsigned int *)(pixPtr + x + (y * TargetFramebuffer->PixelsPerScanLine)) = color;
+                *(uint32_t *)(pixPtr + x + (y * TargetFramebuffer->PixelsPerScanLine)) = color;
             }
         }
         fontPtr++;
     }
 }
-unsigned int Graphics::print(unsigned int color, const char *str, unsigned int xOff, unsigned int yOff, float width, float height)
+uint32_t Graphics::print(uint32_t color, const char *str, int32_t xOff, int32_t yOff, float width, float height)
 {
     char *chr = (char *)str;
     while (*chr != 0)
     {
-        putChar(color, *chr, xOff, yOff, width, height);
+        if (xOff >= 0)
+            putChar(color, *chr, xOff, yOff, width, height);
         xOff += 8;
         if (xOff > TargetFramebuffer->Width)
-        {
-            xOff = 0;
-            yOff += 20;
-        }
+            return xOff;
         chr++;
     }
     return xOff;
