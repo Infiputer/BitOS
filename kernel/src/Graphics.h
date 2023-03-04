@@ -70,6 +70,9 @@ public:
      * @return The x-offset after printing the text.
      */
     uint32_t print(uint32_t color, const char *str, int32_t xOff, int32_t yOff, float width = 1, float height = 1);
+
+    void render();
+    
     uint32_t GetPix(uint32_t x, uint32_t y);
 
     void DrawOverlayMouseCursor(uint8_t *mouseCursor, Point position);

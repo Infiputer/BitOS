@@ -1,14 +1,14 @@
 clear
 echo "Compiling BitOS!"
-cd ~/BitOS/kernel
+cd kernel
 rm -r lib
 mkdir lib
 make
 make buildimg
-cd ~/BitOS/gnu-efi/
+cd ../gnu-efi/
 make
 make bootloader
-cd ~/BitOS/kernel/
+cd ../kernel/
 make setup
 make buildimg
 echo "Done!"

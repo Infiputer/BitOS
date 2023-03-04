@@ -62,6 +62,11 @@ void PrepareACPI(BootInfo *bootInfo)
 
 void bootHelper(BootInfo *bootInfo)
 {
+    InitializeHeap((void *)0x1000000, 0x10);
+    
+    Graphics g = Graphics(bootInfo->framebuffer, bootInfo->psf1_Font);
+    graphics = &g;
+
     screenWidth = bootInfo->framebuffer->Width;
     screenHeight = bootInfo->framebuffer->Height;
     uint64_t mMapEntries = bootInfo->mMapSize / bootInfo->mMapDescSize;
@@ -81,9 +86,8 @@ void bootHelper(BootInfo *bootInfo)
     gdtDescriptor.Offset = (uint64_t)&DefaultGDT;
     LoadGDT(&gdtDescriptor);
 
-    memset(bootInfo->framebuffer->BaseAddress, 0xff, bootInfo->framebuffer->BufferSize);
+    memset(bootInfo->framebuffer->BaseAddress, 0x13, bootInfo->framebuffer->BufferSize);
 
-    InitializeHeap((void *)0x1000000, 0x10);
 
     PrepareInterrupts();
 
@@ -92,16 +96,6 @@ void bootHelper(BootInfo *bootInfo)
     InitPS2Mouse();
 
     InitPanels();
-
-    graphics->print(0, "Checking memory...", 0, 0);
-    graphics->print(0, to_string((uint64_t)malloc(0x8000)), 0, 20);
-    void *address = malloc(0x8000);
-    graphics->print(0, to_string((uint64_t)address), 0, 40);
-    graphics->print(0, to_string((uint64_t)malloc(0x100)), 0, 60);
-    free(address);
-    graphics->print(0, to_string((uint64_t)malloc(0x800)), 0, 80);
-
-    // while(true);
 
     outb(PIC1_DATA, 0b11111001);
     outb(PIC2_DATA, 0b11101111);

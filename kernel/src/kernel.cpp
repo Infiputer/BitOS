@@ -18,15 +18,12 @@ extern volatile KeyPress keysPressed[maxKeysDown];
 
 extern "C" void _start(BootInfo *bootInfo) // Start function
 {
-    Graphics g = Graphics(bootInfo->framebuffer, bootInfo->psf1_Font);
-    graphics = &g;
+
     bootHelper(bootInfo);
-    graphics->clear(0xffffff);
+    graphics->clear(0x00ffff);
     graphics->print(0, "Kernel Initalized", 0, 0);
-    
-    
+
     while(true){
-        
         asm("hlt");
     }
     return;

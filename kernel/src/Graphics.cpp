@@ -134,3 +134,7 @@ uint32_t Graphics::print(uint32_t color, const char *str, int32_t xOff, int32_t 
     }
     return xOff;
 }
+
+void Graphics::render(){
+
+};

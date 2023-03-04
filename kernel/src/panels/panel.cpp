@@ -16,13 +16,22 @@ int32_t mouseYGrabOffset = 0;
 uint32_t numPanels = 5;
 Panel *panels;
 
-void InitPanels()
+const char *panelTitles[] = {
+    "Notepad",
+    "Terminal",
+    "Mail",
+    "File Explorer",
+    "App Store",
+};
+
+void
+InitPanels()
 {
     mouseGrab = 0;
     panels = (Panel *)GlobalAllocator.RequestPage();
     for (uint32_t i = 0; i < numPanels; i++)
     {
-        panels[i].title = "Hello World";
+        panels[i].title = panelTitles[i % 5];
         panels[i].x = i * 50 + 5;
         panels[i].y = i * 90;
         panels[i].properties = 0;
@@ -48,7 +57,8 @@ void CheckPanelHover(uint32_t mouseX, uint32_t mouseY)
         panels[i].properties = setBit(panels[i].properties, 2, boxHover(&panels[i], mouseX, mouseY, 2)); // Restore Down, Maximize
         panels[i].properties = setBit(panels[i].properties, 3, boxHover(&panels[i], mouseX, mouseY, 3)); // Minimize
     }
-    if(mouseGrab != 0){
+    if (mouseGrab != 0)
+    {
         panels[mouseGrab - 1].x = mouseX - (int32_t)mouseXGrabOffset;
         panels[mouseGrab - 1].y = mouseY - (int32_t)mouseYGrabOffset;
     }
@@ -59,7 +69,8 @@ void CheckPanelHover(uint32_t mouseX, uint32_t mouseY)
 
 void PanelClick(uint32_t mouseX, uint32_t mouseY)
 {
-    if(mouseGrab == 0){
+    if (mouseGrab == 0)
+    {
         for (uint32_t i = 0; i < numPanels; i++)
         {
             if (panels[i].x < (int32_t)mouseX && panels[i].x + (int32_t)panels[i].width > mouseX &&
@@ -74,7 +85,8 @@ void PanelClick(uint32_t mouseX, uint32_t mouseY)
     }
 };
 
-void PanelClearPanelGrab(){
+void PanelClearPanelGrab()
+{
     mouseGrab = 0;
 }
 
