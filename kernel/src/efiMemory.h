@@ -2,8 +2,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "FrameBuffer.h"
-#include "FontDefinitions.h"
+#include "graphics/FrameBuffer.h"
+#include "graphics/FontDefinitions.h"
 
 // const char* EFI_MEMORY_TYPE_STRINGS[] {
 //     "EfiReservedMemoryType",

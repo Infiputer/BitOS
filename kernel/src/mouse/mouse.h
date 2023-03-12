@@ -1,7 +1,7 @@
 #pragma once
 #include "../portIO.h"
 #include "../math.h"
-#include "../Graphics.h"
+#include "../graphics/Graphics.h"
 #include "../ToString.h"
 
 #define PS2Leftbutton 0b00000001

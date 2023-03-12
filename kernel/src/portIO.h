@@ -19,12 +19,13 @@ static void outb(short port, char data)
         return;
 }
 
-static uint8_t inb(uint16_t port){
-    uint8_t returnVal;
-    asm volatile ("inb %1, %0"
-    : "=a"(returnVal)
-    : "Nd"(port));
-    return returnVal;
+static uint8_t inb(uint16_t port)
+{
+        uint8_t returnVal;
+        asm volatile("inb %1, %0"
+                     : "=a"(returnVal)
+                     : "Nd"(port));
+        return returnVal;
 }
 
 /**************** SEND/RECEIVE WORD ******************/

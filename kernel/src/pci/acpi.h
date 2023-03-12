@@ -1,8 +1,10 @@
 #pragma once
 #include <stdint.h>
 
-namespace ACPI{
-    struct RSDP2 {
+namespace ACPI
+{
+    struct RSDP2
+    {
         unsigned char Signature[8];
         uint8_t Checksum;
         uint8_t OEMId[6];
@@ -14,7 +16,8 @@ namespace ACPI{
         uint8_t Reserved[3];
     } __attribute__((packed));
 
-    struct SDTHeader{
+    struct SDTHeader
+    {
         unsigned char Signature[4];
         uint32_t Length;
         uint8_t Revision;
@@ -24,21 +27,22 @@ namespace ACPI{
         uint32_t OEMRevision;
         uint32_t CreatorID;
         uint32_t CreatorRevision;
-    }__attribute__((packed));
+    } __attribute__((packed));
 
-    struct MCFGHeader{
+    struct MCFGHeader
+    {
         SDTHeader Header;
         uint64_t Reserved;
-    }__attribute__((packed));
+    } __attribute__((packed));
 
-    struct DeviceConfig{
+    struct DeviceConfig
+    {
         uint64_t BaseAddress;
         uint16_t PCISegGroup;
         uint8_t StartBus;
         uint8_t EndBus;
         uint32_t Reserved;
-    }__attribute__((packed));
+    } __attribute__((packed));
 
-
-    void* FindTable(SDTHeader* sdtHeader, char* signature);
+    void *FindTable(SDTHeader *sdtHeader, char *signature);
 }

@@ -14,8 +14,8 @@ void renderPanel(Panel *panel)
 
     if ((panel->properties >> 0) & 1)
     {
-        graphics->fillRect(color_rgb(255, 0, 0), panel->x + panel->width - closeDistanceFromRight, panel->y + (titleBarHeight / 2) - 8, boxSize, boxSize);  // draw red rectangle for "X"(close)
-        graphics->putChar(color_rgb(255, 255, 255), 'x', panel->x + panel->width - closeDistanceFromRight + 4, panel->y + (titleBarHeight / 2 - 10)); //"X" for panel close in white
+        graphics->fillRect(color_rgb(255, 0, 0), panel->x + panel->width - closeDistanceFromRight, panel->y + (titleBarHeight / 2) - 8, boxSize, boxSize); // draw red rectangle for "X"(close)
+        graphics->putChar(color_rgb(255, 255, 255), 'x', panel->x + panel->width - closeDistanceFromRight + 4, panel->y + (titleBarHeight / 2 - 10));      //"X" for panel close in white
     }
     else
     {
@@ -39,11 +39,9 @@ void renderPanel(Panel *panel)
 
     if ((panel->properties >> 3) & 1)
     {
-        graphics->fillRect(color_rgb(255, 255, 0), panel->x + panel->width - closeDistanceFromRight - boxSpacing*2, panel->y + (titleBarHeight / 2) - 8, 15, 16);
+        graphics->fillRect(color_rgb(255, 255, 0), panel->x + panel->width - closeDistanceFromRight - boxSpacing * 2, panel->y + (titleBarHeight / 2) - 8, 15, 16);
     }
-    graphics->putChar(color_rgb(0, 0, 0), '-', panel->x + panel->width - closeDistanceFromRight - boxSpacing*2 + 3, panel->y + (titleBarHeight / 2 - 10) + 1); //"-" for panel minimize
-
-
+    graphics->putChar(color_rgb(0, 0, 0), '-', panel->x + panel->width - closeDistanceFromRight - boxSpacing * 2 + 3, panel->y + (titleBarHeight / 2 - 10) + 1); //"-" for panel minimize
 
     graphics->fillRect(color_rgb(255, 255, 255), panel->x, panel->y + titleBarHeight, panel->width, panel->height); // white rectangle for panel content(framebuffer)
     graphics->drawRect(color_rgb(0, 0, 0), panel->x, panel->y + titleBarHeight, panel->width, panel->height);

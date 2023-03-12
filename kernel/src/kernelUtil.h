@@ -7,13 +7,13 @@
 #include "interrupts/IDT.h"
 #include "interrupts/interrupts.h"
 #include "portIO.h"
-#include "keyboard/KeyPressType.h"
 #include "pci/acpi.h"
 #include "pci/pci.h"
 #include "memory/memory.h"
-#include "panic.h"
 #include "memory/heap.h"
 #include "panels/panel.h"
+#include "logger/logger.h"
+#include "ToString.h"
 
 extern uint64_t screenWidth;
 extern uint64_t screenHeight;
@@ -63,7 +63,7 @@ void PrepareACPI(BootInfo *bootInfo)
 void bootHelper(BootInfo *bootInfo)
 {
     InitializeHeap((void *)0x1000000, 0x10);
-    
+
     Graphics g = Graphics(bootInfo->framebuffer, bootInfo->psf1_Font);
     graphics = &g;
 
@@ -88,14 +88,19 @@ void bootHelper(BootInfo *bootInfo)
 
     memset(bootInfo->framebuffer->BaseAddress, 0x13, bootInfo->framebuffer->BufferSize);
 
-
     PrepareInterrupts();
 
     // PrepareACPI(bootInfo);
 
+    InitLog();
+
     InitPS2Mouse();
 
     InitPanels();
+
+    log("Enabling Double Buffering", LOG_LIGHT_BLUE);
+    graphics->enableDoubleBuffering();
+    log("Double Buffering Started!");
 
     outb(PIC1_DATA, 0b11111001);
     outb(PIC2_DATA, 0b11101111);

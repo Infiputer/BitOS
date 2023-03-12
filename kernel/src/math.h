@@ -1,4 +1,6 @@
 #pragma once
+#include <stdint.h>
+
 struct Point
 {
     long X;
@@ -143,3 +145,29 @@ double sqrt(double x, double epsilon);
  * @return     The distance between the two points.
  */
 double distance(double x1, double y1, double x2, double y2);
+
+/**
+ * Calculates the result of raising a given base number to a given integer exponent.
+ * 
+ * @param base the base number
+ * @param exponent the integer exponent
+ * @return the result of raising the base to the power of the exponent
+ */
+double pow(double base, int exponent);
+
+/**
+ * Calculates the result of raising a given base number to a given integer exponent.
+ * 
+ * @param base the base number
+ * @param exponent the integer exponent
+ * @return the result of raising the base to the power of the exponent
+ */
+int64_t pow(int64_t base, int64_t exponent);
+
+/**
+ * Computes the absolute value of a floating-point number.
+ *
+ * @param x the input floating-point number.
+ * @return the absolute value of x.
+ */
+double fabs(double x);

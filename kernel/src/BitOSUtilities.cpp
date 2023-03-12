@@ -1,14 +1,14 @@
 #include "BitOSUtilities.h"
-/** 
+/**
  * Converts an integer to a string representation in a specified base
- * 
+ *
  * @param value Integer to be converted
  * @param result Buffer to store the result string
  * @param base Base to represent the number in (2 <= base <= 36)
- * 
+ *
  * @return Pointer to the result string
  */
-char *itoa(int value, char *result, int base) 
+char *itoa(int value, char *result, int base)
 {
     // check that the base if valid
     if (base < 2 || base > 36)
@@ -59,7 +59,7 @@ bool isAlpha(char c)
 
 /**
 
-* Converts a lowercase character to its uppercase equivalent 
+* Converts a lowercase character to its uppercase equivalent
 *
 * @param c The lowercase character to be converted
 *
@@ -103,7 +103,6 @@ size_t strlen(const char *str)
     return ret;
 }
 
-
 /**
  * Sets or clears a bit in an integer value based on the given bit index and value.
  *
@@ -111,12 +110,16 @@ size_t strlen(const char *str)
  * @param bitIndex The index of the bit to set or clear (0 is the least significant bit).
  * @param bitValue The value to set or clear the bit to (false clears the bit, true sets the bit).
  */
-uint8_t setBit(uint8_t num, int bitIndex, bool bitValue) {
-    if (bitValue) {
+uint8_t setBit(uint8_t num, int bitIndex, bool bitValue)
+{
+    if (bitValue)
+    {
         // Set the bit at the given index to 1 by performing a bitwise OR with a mask
         // that has a 1 in the bit index position and 0 elsewhere.
         num |= (1 << bitIndex);
-    } else {
+    }
+    else
+    {
         // Clear the bit at the given index to 0 by performing a bitwise AND with a mask
         // that has a 0 in the bit index position and 1 elsewhere (complement of a mask with a 1 in that position).
         num &= ~(1 << bitIndex);

@@ -1,5 +1,5 @@
 #pragma once
-#include "../GraphicsHelper.h"
+#include "../graphics/GraphicsHelper.h"
 #include "renderPanel.h"
 
 struct Panel

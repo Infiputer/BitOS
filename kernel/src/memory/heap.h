@@ -2,19 +2,37 @@
 #include <stdint.h>
 #include <stddef.h>
 
-struct HeapSegHdr{
+struct HeapSegHdr
+{
     size_t length;
-    HeapSegHdr* next;
-    HeapSegHdr* last;
+    HeapSegHdr *next;
+    HeapSegHdr *last;
     bool free;
     void CombineForward();
     void CombineBackward();
-    HeapSegHdr* Split(size_t splitLength);
+    HeapSegHdr *Split(size_t splitLength);
 };
 
-void InitializeHeap(void* heapAddress, size_t pageCount);
+void InitializeHeap(void *heapAddress, size_t pageCount);
 
-void* malloc(size_t size);
-void free(void* address);
+void *malloc(size_t size);
+void *calloc(size_t size);
+void free(void *address);
+size_t malloc_usable_size(void *address);
+void* realloc(void* ptr, size_t size);
 
 void ExpandHeap(size_t length);
+
+inline void *operator new(size_t size)
+{
+    return malloc(size);
+}
+inline void *operator new[](size_t size)
+{
+    return malloc(size);
+}
+
+inline void operator delete(void *p)
+{
+    free(p);
+}

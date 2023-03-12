@@ -19,7 +19,7 @@ struct interrupt_frame;
  * This function is called when a page fault is detected. It prints an error
  * message and enters an infinite loop, as the system panic is triggered.
  */
-__attribute__((interrupt)) void PageFault_Handler(struct interrupt_frame* frame);
+__attribute__((interrupt)) void PageFault_Handler(struct interrupt_frame *frame);
 /**
  * Double Fault interrupt handler.
  *
@@ -28,7 +28,7 @@ __attribute__((interrupt)) void PageFault_Handler(struct interrupt_frame* frame)
  * This function is called when a Double fault is detected. It prints an error
  * message and enters an infinite loop, as the system panic is triggered.
  */
-__attribute__((interrupt)) void DoubleFault_Handler(struct interrupt_frame* frame);
+__attribute__((interrupt)) void DoubleFault_Handler(struct interrupt_frame *frame);
 /**
  * General Protectio Fault interrupt handler.
  *
@@ -37,19 +37,19 @@ __attribute__((interrupt)) void DoubleFault_Handler(struct interrupt_frame* fram
  * This function is called when a General Protection fault is detected. It prints an error
  * message and enters an infinite loop, as the system panic is triggered.
  */
-__attribute__((interrupt)) void GPFault_Handler(struct interrupt_frame* frame);
+__attribute__((interrupt)) void GPFault_Handler(struct interrupt_frame *frame);
 /**
  * Interrupt handler for PS/2 Keyboard event
  *
  * @param frame Pointer to the interrupt frame
  */
-__attribute__((interrupt)) void KeyboardInt_Handler(struct interrupt_frame* frame);
+__attribute__((interrupt)) void KeyboardInt_Handler(struct interrupt_frame *frame);
 /**
  * Interrupt handler for PS/2 Mouse event
  *
  * @param frame Pointer to the interrupt frame
  */
-__attribute__((interrupt)) void MouseInt_Handler(interrupt_frame* frame);
+__attribute__((interrupt)) void MouseInt_Handler(interrupt_frame *frame);
 
 void RemapPIC();
 /**

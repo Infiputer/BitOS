@@ -2,7 +2,7 @@
 #include "panel.h"
 #include "../paging/PageFrameAllocator.h"
 #include "../ToString.h"
-#include "../Graphics.h"
+#include "../graphics/Graphics.h"
 #include "../BitOSUtilities.h"
 #include "../mouse/mouse.h"
 
@@ -24,8 +24,7 @@ const char *panelTitles[] = {
     "App Store",
 };
 
-void
-InitPanels()
+void InitPanels()
 {
     mouseGrab = 0;
     panels = (Panel *)GlobalAllocator.RequestPage();

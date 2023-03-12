@@ -1,11 +1,13 @@
 #pragma once
 #include <stdint.h>
 #include "acpi.h"
-#include "../Graphics.h"
+#include "../graphics/Graphics.h"
 #include "../ToString.h"
 
-namespace PCI{
-    struct PCIDeviceHeader{
+namespace PCI
+{
+    struct PCIDeviceHeader
+    {
         uint16_t VendorID;
         uint16_t DeviceID;
         uint16_t Command;
@@ -20,5 +22,5 @@ namespace PCI{
         uint8_t BIST;
     };
 
-    void EnumeratePCI(ACPI::MCFGHeader* mcfg);
+    void EnumeratePCI(ACPI::MCFGHeader *mcfg);
 }

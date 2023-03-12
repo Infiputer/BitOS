@@ -197,22 +197,26 @@ void ProcessMousePacket()
     if (MousePosition.Y > graphics->TargetFramebuffer->Height - 16)
         MousePosition.Y = graphics->TargetFramebuffer->Height - 16;
 
-    if(MousePacket[0] & PS2Leftbutton){
+    if (MousePacket[0] & PS2Leftbutton)
+    {
         PanelClick(MousePosition.X, MousePosition.Y);
-    }else{
+    }
+    else
+    {
         PanelClearPanelGrab();
     }
 
     renderMouse();
 
     CheckPanelHover(MousePosition.X, MousePosition.Y);
-    
-    MousePacketReady = false;
-    
 
+    graphics->render();
+
+    MousePacketReady = false;
 }
 
-void renderMouse(){
+void renderMouse()
+{
     graphics->ClearMouseCursor(MousePointer, MousePositionOld);
     graphics->DrawOverlayMouseCursor(MousePointer, MousePosition);
     MousePositionOld = MousePosition;

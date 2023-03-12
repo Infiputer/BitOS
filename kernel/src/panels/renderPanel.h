@@ -1,8 +1,8 @@
 #pragma once
 #include <stdint.h>
 #include "../BitOSUtilities.h"
-#include "../GraphicsHelper.h"
-#include "../Graphics.h"
+#include "../graphics/GraphicsHelper.h"
+#include "../graphics/Graphics.h"
 #include "panel.h"
 
 #define titleBarHeight 30
@@ -10,5 +10,4 @@
 #define boxSize 16
 #define boxSpacing 20
 
-void renderPanel(struct Panel* panel); 
-
+void renderPanel(struct Panel *panel);

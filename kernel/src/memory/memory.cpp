@@ -26,8 +26,8 @@ void memset(void *start, uint8_t value, uint64_t num)
  */
 void *memcpy(void *dest, const void *src, uint64_t n)
 {
-    const unsigned char *q = (const unsigned char*)src;
-    unsigned char *p = (unsigned char*)dest;
+    const unsigned char *q = (const unsigned char *)src;
+    unsigned char *p = (unsigned char *)dest;
 
     while (n--)
         *p++ = *q++;
