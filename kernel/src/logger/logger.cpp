@@ -1,10 +1,10 @@
 #include "logger.h"
-#include "../memory/heap.h"
+#include "../paging/PageFrameAllocator.h"
 #include "../memory/memory.h"
 #include "../graphics/Graphics.h"
 #include "../graphics/GraphicsHelper.h"
 
-uint32_t LogSize = 1000;
+uint32_t LogSize = 2000;
 uint32_t currentLogPosition = 0;
 
 char *logText = nullptr;
@@ -13,8 +13,7 @@ void InitLog()
 {
     if (logText != nullptr)
         return;
-    LogSize = (graphics->TargetFramebuffer->Width/8) * (graphics->TargetFramebuffer->Height/20) / 5;
-    logText = (char *)malloc(LogSize);
+    logText = (char *)GlobalAllocator.RequestPage();
 };
 
 #define LOG_RGB_LIGHT_RED    color_rgb(255, 77, 77)
@@ -136,7 +135,7 @@ void showLog()
     uint32_t currentbg = logColortoRGB(logText[2]);
     for (uint32_t i = 3; i < currentLogPosition; i++)
     {
-        if (logText[i] == 1){
+        if (logText[i] == 1){ // 1 = SOH (START OF COLOR HEADER)
             currentfg = logColortoRGB(logText[i+1]);
             currentbg = logColortoRGB(logText[i+2]);
             i+=3;

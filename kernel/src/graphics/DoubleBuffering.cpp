@@ -79,7 +79,9 @@ uint32_t Graphics::GetPix(uint32_t x, uint32_t y)
             *(doubleBufferArrayRED[pointerIndex] + offset),
             *(doubleBufferArrayGREEN[pointerIndex] + offset),
             *(doubleBufferArrayBLUE[pointerIndex] + offset));
-    } else{
+    }
+    else
+    {
         return *(uint32_t *)((uint64_t)TargetFramebuffer->BaseAddress + (x * 4) + (y * TargetFramebuffer->PixelsPerScanLine * 4));
     }
 }

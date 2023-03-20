@@ -1,5 +1,6 @@
 #include "pci.h"
 #include "pciLookup.h"
+#include "../logger/logger.h"
 
 namespace PCI
 {
@@ -18,14 +19,13 @@ namespace PCI
             return;
 
         uint32_t devicePrintCursorX = 0;
-        devicePrintCursorX = graphics->print(0, PCILookup::GetVendorName(pciDeviceHeader->VendorID), 0, devicePrintCursorY * 20) + 8;
-        graphics->putChar(0, '/', devicePrintCursorX, devicePrintCursorY * 20);
-        devicePrintCursorX = graphics->print(0, PCILookup::GetDeviceName(pciDeviceHeader->VendorID, pciDeviceHeader->DeviceID), devicePrintCursorX + 16, devicePrintCursorY * 20) + 8;
-        graphics->putChar(0, '/', devicePrintCursorX, devicePrintCursorY * 20);
-        devicePrintCursorX = graphics->print(0, PCILookup::GetSubclassName(pciDeviceHeader->Class, pciDeviceHeader->Subclass), devicePrintCursorX + 16, devicePrintCursorY * 20) + 8;
-        graphics->putChar(0, '/', devicePrintCursorX, devicePrintCursorY * 20);
-        devicePrintCursorX = graphics->print(0, PCILookup::GetProgIFName(pciDeviceHeader->Class, pciDeviceHeader->Subclass, pciDeviceHeader->ProgIF), devicePrintCursorX + 16, devicePrintCursorY * 20) + 8;
-        devicePrintCursorY++;
+        log(PCILookup::GetVendorName(pciDeviceHeader->VendorID), 0, 0, 0);
+        log(" / ", 0, 0, 0);
+        log(PCILookup::GetDeviceName(pciDeviceHeader->VendorID, pciDeviceHeader->DeviceID), 0, 0, 0);
+        log(" / ", 0, 0, 0);
+        log(PCILookup::GetSubclassName(pciDeviceHeader->Class, pciDeviceHeader->Subclass), 0, 0, 0);
+        log(" / ", 0, 0, 0);
+        log(PCILookup::GetProgIFName(pciDeviceHeader->Class, pciDeviceHeader->Subclass, pciDeviceHeader->ProgIF));
     }
 
     void EnumerateDevice(uint64_t busAddress, uint64_t device)

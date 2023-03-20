@@ -63,7 +63,6 @@ void CheckPanelHover(uint32_t mouseX, uint32_t mouseY)
     }
     graphics->clear(0x004eff);
     renderPanels();
-    renderMouse();
 }
 
 void PanelClick(uint32_t mouseX, uint32_t mouseY)

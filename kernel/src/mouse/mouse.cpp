@@ -1,5 +1,6 @@
-#include "mouse.h"
 #include "../panels/panel.h"
+#include "../logger/logger.h"
+#include "mouse.h"
 
 uint8_t MousePointer[] = {
     0b11111111,
@@ -80,16 +81,15 @@ bool MousePacketReady = false;
 Point MousePosition;
 Point MousePositionOld;
 
+bool skip = true;
 void HandlePS2Mouse(uint8_t data)
 {
     ProcessMousePacket();
-    static bool skip = true;
     if (skip)
     {
         skip = false;
         return;
     }
-
     switch (MouseCycle)
     {
     case 0:
@@ -121,35 +121,13 @@ void ProcessMousePacket()
     if (!MousePacketReady)
         return;
 
-    bool xNegative, yNegative, xOverflow, yOverflow;
+    bool xNegative = MousePacket[0] & PS2XSign;
+    bool yNegative = MousePacket[0] & PS2YSign;
+    bool xOverflow = MousePacket[0] & PS2XOverflow;
+    bool yOverflow = MousePacket[0] & PS2YOverflow;
 
-    if (MousePacket[0] & PS2XSign)
-    {
-        xNegative = true;
-    }
-    else
-        xNegative = false;
+    MousePacketReady = false;
 
-    if (MousePacket[0] & PS2YSign)
-    {
-        yNegative = true;
-    }
-    else
-        yNegative = false;
-
-    if (MousePacket[0] & PS2XOverflow)
-    {
-        xOverflow = true;
-    }
-    else
-        xOverflow = false;
-
-    if (MousePacket[0] & PS2YOverflow)
-    {
-        yOverflow = true;
-    }
-    else
-        yOverflow = false;
 
     if (!xNegative)
     {
@@ -189,36 +167,31 @@ void ProcessMousePacket()
 
     if (MousePosition.X < 0)
         MousePosition.X = 0;
-    if (MousePosition.X > graphics->TargetFramebuffer->Width - 8)
-        MousePosition.X = graphics->TargetFramebuffer->Width - 8;
+    if (MousePosition.X > graphics->TargetFramebuffer->Width - 1)
+        MousePosition.X = graphics->TargetFramebuffer->Width - 1;
 
     if (MousePosition.Y < 0)
         MousePosition.Y = 0;
-    if (MousePosition.Y > graphics->TargetFramebuffer->Height - 16)
-        MousePosition.Y = graphics->TargetFramebuffer->Height - 16;
+    if (MousePosition.Y > graphics->TargetFramebuffer->Height - 1)
+        MousePosition.Y = graphics->TargetFramebuffer->Height - 1;
+
+    graphics->ClearMouseCursor(MousePointer, MousePositionOld);
+    graphics->DrawOverlayMouseCursor(MousePointer, MousePosition);
 
     if (MousePacket[0] & PS2Leftbutton)
     {
-        PanelClick(MousePosition.X, MousePosition.Y);
+        graphics->putChar(0x0000ff, '.', MousePosition.X, MousePosition.Y);
     }
-    else
+    if (MousePacket[0] & PS2Middlebutton)
     {
-        PanelClearPanelGrab();
+        graphics->putChar(0x00ff00, '.', MousePosition.X, MousePosition.Y);
     }
-
-    renderMouse();
-
-    CheckPanelHover(MousePosition.X, MousePosition.Y);
-
+    if (MousePacket[0] & PS2Rightbutton)
+    {
+        graphics->putChar(0xff0000, '.', MousePosition.X, MousePosition.Y);
+    }
     graphics->render();
 
-    MousePacketReady = false;
-}
-
-void renderMouse()
-{
-    graphics->ClearMouseCursor(MousePointer, MousePositionOld);
-    graphics->DrawOverlayMouseCursor(MousePointer, MousePosition);
     MousePositionOld = MousePosition;
 }
 

@@ -22,7 +22,7 @@ extern "C" void _start(BootInfo *bootInfo) // Start function
 
     bootHelper(bootInfo);
     log("BitOS Started!", LOG_GREEN);
-
+    uint16_t clr = 0;
     while (true)
     {
         asm("hlt");

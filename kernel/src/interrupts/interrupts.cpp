@@ -27,16 +27,14 @@ volatile KeyPress keysPressed[maxKeysDown] = {{0, 127, 0}, {0, 127, 0}, {0, 127,
 __attribute__((interrupt)) void PageFault_Handler(struct interrupt_frame *frame)
 {
     SysPanic("Page Fault Detected");
-
-    if (previousNumberOfErrors > maxNumberOfErrorsTillHalt)
-    {
-        while (true)
-        {
+    
+    if(previousNumberOfErrors > maxNumberOfErrorsTillHalt){
+        while(true){
             asm("hlt");
         }
     }
 
-    for (haltNumber = 0; haltNumber < numberOfNopsTillErrorExit; haltNumber++)
+    for(haltNumber = 0; haltNumber < numberOfNopsTillErrorExit; haltNumber++)
         asm("nop");
 
     previousNumberOfErrors++;
@@ -54,15 +52,13 @@ __attribute__((interrupt)) void DoubleFault_Handler(struct interrupt_frame *fram
 {
     SysPanic("Double Fault Detected");
 
-    if (previousNumberOfErrors > maxNumberOfErrorsTillHalt)
-    {
-        while (true)
-        {
+    if(previousNumberOfErrors > maxNumberOfErrorsTillHalt){
+        while(true){
             asm("hlt");
         }
     }
 
-    for (haltNumber = 0; haltNumber < numberOfNopsTillErrorExit; haltNumber++)
+    for(haltNumber = 0; haltNumber < numberOfNopsTillErrorExit; haltNumber++)
         asm("nop");
     previousNumberOfErrors++;
 }
@@ -79,15 +75,13 @@ __attribute__((interrupt)) void GPFault_Handler(struct interrupt_frame *frame)
 {
     SysPanic("General Protection Fault Detected");
 
-    if (previousNumberOfErrors > maxNumberOfErrorsTillHalt)
-    {
-        while (true)
-        {
+    if(previousNumberOfErrors > maxNumberOfErrorsTillHalt){
+        while(true){
             asm("hlt");
         }
     }
 
-    for (haltNumber = 0; haltNumber < numberOfNopsTillErrorExit; haltNumber++)
+    for(haltNumber = 0; haltNumber < numberOfNopsTillErrorExit; haltNumber++)
         asm("nop");
     previousNumberOfErrors++;
 }

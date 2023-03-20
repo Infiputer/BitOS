@@ -88,19 +88,22 @@ void bootHelper(BootInfo *bootInfo)
 
     memset(bootInfo->framebuffer->BaseAddress, 0x13, bootInfo->framebuffer->BufferSize);
 
-    PrepareInterrupts();
-
-    // PrepareACPI(bootInfo);
-
     InitLog();
-
-    InitPS2Mouse();
-
-    InitPanels();
 
     log("Enabling Double Buffering", LOG_LIGHT_BLUE);
     graphics->enableDoubleBuffering();
-    log("Double Buffering Started!");
+    log("Double Buffering Started!", LOG_LIGHT_BLUE);
+
+
+    PrepareInterrupts();
+    InitPanels();
+    InitPS2Mouse();
+
+    log("\nEnumerate PCI devices", LOG_LIGHT_BLUE);
+    PrepareACPI(bootInfo);
+    log("Finished Enumeration", LOG_LIGHT_BLUE);
+
+    log(""); // new line
 
     outb(PIC1_DATA, 0b11111001);
     outb(PIC2_DATA, 0b11101111);
