@@ -128,7 +128,7 @@ uint64_t logColortoRGB(uint8_t color)
 
 void showLog()
 {
-    graphics->clear(0);
+    graphics->clear(0x4d0448);
     uint32_t logPosX = 0;
     uint32_t logPosY = 0;
     uint32_t currentfg = logColortoRGB(logText[1]);
@@ -146,7 +146,6 @@ void showLog()
             logPosY += 20;
             continue;
         }
-        graphics->fillRect(currentbg, logPosX, logPosY, 8, 20);
         graphics->putChar(currentfg, logText[i], logPosX, logPosY);
         logPosX += 8;
     }

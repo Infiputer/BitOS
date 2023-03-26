@@ -4,47 +4,36 @@
 #include "../paging/PageFrameAllocator.h"
 #include "Graphics.h"
 #include "../ToString.h"
+#include "../BitOSUtilities.h"
 
 void Graphics::enableDoubleBuffering()
 {
-    log("Creating RED back buffer");
-
-    for (uint32_t i = 0; i < DoubleBufferMainSize; i++)
+    uint32_t DoubleBufferMainSizeActual = totalScreenSize / 4096 + 1;
+    log("Creating back buffer");
+    for (uint32_t i = 0; i < DoubleBufferMainSizeActual; i++)
     {
         doubleBufferArrayRED[i] = (uint8_t *)GlobalAllocator.RequestPage();
-        if (doubleBufferArrayRED[i] == nullptr)
-        {
-            log("Memory ran out", LOG_RED);
-            return;
-        }
-    }
-    log("Finished creating RED back buffer");
-
-    log("Creating GREEN back buffer");
-
-    for (uint32_t i = 0; i < DoubleBufferMainSize; i++)
-    {
         doubleBufferArrayGREEN[i] = (uint8_t *)GlobalAllocator.RequestPage();
-        if (doubleBufferArrayGREEN[i] == nullptr)
-        {
-            log("Memory ran out", LOG_RED);
-            return;
-        }
-    }
-    log("Finished creating GREEN back buffer");
-
-    log("Creating BLUE back buffer");
-
-    for (uint32_t i = 0; i < DoubleBufferMainSize; i++)
-    {
         doubleBufferArrayBLUE[i] = (uint8_t *)GlobalAllocator.RequestPage();
-        if (doubleBufferArrayBLUE[i] == nullptr)
+        if (
+            doubleBufferArrayRED[i] == nullptr ||
+            doubleBufferArrayGREEN[i] == nullptr ||
+            doubleBufferArrayBLUE[i] == nullptr)
         {
             log("Memory ran out", LOG_RED);
             return;
         }
+
+        while (!checkPage(doubleBufferArrayRED[i]))
+            doubleBufferArrayRED[i] = (uint8_t *)GlobalAllocator.RequestPage();
+
+        while (!checkPage(doubleBufferArrayGREEN[i]))
+            doubleBufferArrayGREEN[i] = (uint8_t *)GlobalAllocator.RequestPage();
+
+        while (!checkPage(doubleBufferArrayBLUE[i]))
+            doubleBufferArrayBLUE[i] = (uint8_t *)GlobalAllocator.RequestPage();
     }
-    log("Finished creating BLUE back buffer");
+    log("Finished creating back buffer");
 
     doubleBufferingEnabled = true;
 }

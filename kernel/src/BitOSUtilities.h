@@ -1,6 +1,7 @@
 #pragma once
 #include <stddef.h>
 #include <stdint.h>
+#include "memory/memory.h"
 /**
  * Converts an integer to a string representation in a specified base
  *
@@ -51,3 +52,17 @@ size_t strlen(const char *str);
  * @param bitValue The value to set or clear the bit to (0 clears the bit, non-zero sets the bit).
  */
 uint8_t setBit(uint8_t num, int bitIndex, bool bitValue);
+
+/**
+ * Sets or clears a bit in an integer value based on the given bit index and value.
+ *
+ * @param dest Destination
+ * @param src Source
+ */
+void strcpy(char* dest, const char* src);
+
+/**
+ * Checks page by reading and writing data
+ * @param p a pointer of the page
+*/
+bool checkPage(void* p);

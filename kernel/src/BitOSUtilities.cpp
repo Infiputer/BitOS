@@ -126,3 +126,30 @@ uint8_t setBit(uint8_t num, int bitIndex, bool bitValue)
     }
     return num;
 }
+
+/**
+ * Sets or clears a bit in an integer value based on the given bit index and value.
+ *
+ * @param dest Destination
+ * @param src Source
+ */
+void strcpy(char* dest, const char* src)
+{
+    while (*src != '\0') {
+        *dest = *src;
+        ++src;
+        ++dest;
+    }
+    *dest = '\0';
+}
+
+bool checkPage(void* p) {
+    uint8_t* page = (uint8_t*)p;
+    memset(p, 13, 4096);
+    for (uint16_t i = 0; i < 4096; i++) {
+        if (page[i] != 13) {
+            return false;
+        }
+    }
+    return true;
+}

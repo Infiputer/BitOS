@@ -1,6 +1,7 @@
 #include "pci.h"
 #include "pciLookup.h"
 #include "../logger/logger.h"
+#include "../BitOSUtilities.h"
 
 namespace PCI
 {
@@ -18,14 +19,23 @@ namespace PCI
         if (pciDeviceHeader->DeviceID == 0xFFFF)
             return;
 
-        uint32_t devicePrintCursorX = 0;
-        log(PCILookup::GetVendorName(pciDeviceHeader->VendorID), 0, 0, 0);
-        log(" / ", 0, 0, 0);
-        log(PCILookup::GetDeviceName(pciDeviceHeader->VendorID, pciDeviceHeader->DeviceID), 0, 0, 0);
-        log(" / ", 0, 0, 0);
-        log(PCILookup::GetSubclassName(pciDeviceHeader->Class, pciDeviceHeader->Subclass), 0, 0, 0);
-        log(" / ", 0, 0, 0);
-        log(PCILookup::GetProgIFName(pciDeviceHeader->Class, pciDeviceHeader->Subclass, pciDeviceHeader->ProgIF));
+        char deviceString[2000];
+        uint32_t deviceIndex = 0;
+        strcpy(deviceString, PCILookup::GetVendorName(pciDeviceHeader->VendorID));
+        deviceIndex += strlen(PCILookup::GetVendorName(pciDeviceHeader->VendorID));
+        deviceString[deviceIndex++] = '/';
+
+        strcpy((char*)((uint64_t)deviceString+deviceIndex), PCILookup::GetDeviceName(pciDeviceHeader->VendorID, pciDeviceHeader->DeviceID));
+        deviceIndex += strlen(PCILookup::GetDeviceName(pciDeviceHeader->VendorID, pciDeviceHeader->DeviceID));
+        deviceString[deviceIndex++] = '/';
+
+        strcpy((char*)((uint64_t)deviceString+deviceIndex), PCILookup::GetSubclassName(pciDeviceHeader->Class, pciDeviceHeader->Subclass));
+        deviceIndex += strlen(PCILookup::GetSubclassName(pciDeviceHeader->Class, pciDeviceHeader->Subclass));
+        deviceString[deviceIndex++] = '/';
+
+        strcpy((char*)((uint64_t)deviceString+deviceIndex), PCILookup::GetProgIFName(pciDeviceHeader->Class, pciDeviceHeader->Subclass, pciDeviceHeader->ProgIF));
+        
+        log(deviceString);
     }
 
     void EnumerateDevice(uint64_t busAddress, uint64_t device)
