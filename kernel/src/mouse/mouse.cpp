@@ -128,7 +128,6 @@ void ProcessMousePacket()
 
     MousePacketReady = false;
 
-
     if (!xNegative)
     {
         MousePosition.X += MousePacket[1];
@@ -179,18 +178,12 @@ void ProcessMousePacket()
     graphics->DrawOverlayMouseCursor(MousePointer, MousePosition);
 
     if (MousePacket[0] & PS2Leftbutton)
-    {
-        graphics->putChar(0x0000ff, '.', MousePosition.X, MousePosition.Y);
-    }
-    if (MousePacket[0] & PS2Middlebutton)
-    {
-        graphics->putChar(0x00ff00, '.', MousePosition.X, MousePosition.Y);
-    }
-    if (MousePacket[0] & PS2Rightbutton)
-    {
-        graphics->putChar(0xff0000, '.', MousePosition.X, MousePosition.Y);
-    }
+        PanelClick(MousePosition.X, MousePosition.Y);
+    else
+        PanelClearPanelGrab();
     graphics->render();
+
+    CheckPanelHover(MousePosition.X, MousePosition.Y);
 
     MousePositionOld = MousePosition;
 }

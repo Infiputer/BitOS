@@ -61,8 +61,6 @@ void CheckPanelHover(uint32_t mouseX, uint32_t mouseY)
         panels[mouseGrab - 1].x = mouseX - (int32_t)mouseXGrabOffset;
         panels[mouseGrab - 1].y = mouseY - (int32_t)mouseYGrabOffset;
     }
-    graphics->clear(0x004eff);
-    renderPanels();
 }
 
 void PanelClick(uint32_t mouseX, uint32_t mouseY)

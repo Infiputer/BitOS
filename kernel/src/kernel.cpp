@@ -6,9 +6,7 @@
 #include "panels/renderPanel.h"
 #include "kernelUtil.h"
 #include "keyboard/KeyPressType.h"
-#include "panels/panel.h"
 #include "graphics/renderGUI.h"
-#include "cryptography/hash.h"
 
 Graphics *graphics;
 extern uint64_t screenWidth;
@@ -22,9 +20,13 @@ extern "C" void _start(BootInfo *bootInfo) // Start function
 
     bootHelper(bootInfo);
     log("BitOS Started!", LOG_GREEN);
-    uint16_t clr = 0;
+
     while (true)
     {
+        asm("cli");
+        graphics->clear(0x004eff);
+        renderPanels();
+        asm("sti");
         asm("hlt");
     }
     return;
