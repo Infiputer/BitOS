@@ -23,6 +23,8 @@ extern uint64_t _KernelEnd;
 uint64_t screenWidth;
 uint64_t screenHeight;
 
+Graphics *graphics;
+
 IDTR idtr;
 void SetIDTGate(void *handler, uint8_t entryOffset, uint8_t type_attr, uint8_t selector)
 {
@@ -93,7 +95,6 @@ void bootHelper(BootInfo *bootInfo)
     log("Enabling Double Buffering", LOG_LIGHT_BLUE);
     graphics->enableDoubleBuffering();
     log("Double Buffering Started!", LOG_LIGHT_BLUE);
-
 
     PrepareInterrupts();
     InitPanels();
