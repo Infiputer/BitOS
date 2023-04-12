@@ -34,6 +34,8 @@ namespace PCILookup
             return "AMD";
         case 0x10DE:
             return "NVIDIA Corporation";
+        case 0x197b:
+            return "JMicron Technology Corp.";
         }
         return to_hstring(vendorID);
     }
@@ -53,7 +55,61 @@ namespace PCILookup
                 return "6 port SATA Controller [AHCI mode]";
             case 0x2930:
                 return "SMBus Controller";
+            case 0x0126:
+                return "Intel(R) HD Graphics 3000";
+            case 0x1C3A:
+                return "Intel(R) Management Engine Interface";
+            case 0x1502:
+                return "Intel(R) Ethernet Connection (2) I218-V";
+            case 0x1C2D:
+                return "Intel(R) USB 3.0 eXtensible Host Controller";
+            case 0x1C20:
+                return "Intel(R) 6 Series/C200 Series Chipset Family High Definition Audio Controller";
+            case 0x1C10:
+                return "Intel(R) 6 Series/C200 Series Chipset Family PCI Express Root Port 1";
+            case 0x1C12:
+                return "Intel(R) 6 Series/C200 Series Chipset Family PCI Express Root Port 2";
+            case 0x1C14:
+                return "Intel(R) 6 Series/C200 Series Chipset Family PCI Express Root Port 3";
+            case 0x1C16:
+                return "Intel(R) 6 Series/C200 Series Chipset Family PCI Express Root Port 4";
+            case 0x1C1E:
+                return "Intel(R) HM67 Express Chipset Family LPC Interface Controller";
+            case 0x1C26:
+                return "Intel(R) HM67 Express Chipset Family SATA AHCI Controller";
+            case 0x1C4F:
+                return "Intel(R) 7 Series/C216 Chipset Family SMBus Host Controller";
             }
+            break;
+        case 0x1002: // AMD
+            switch (deviceID)
+            {
+            case 0x9851:
+                return "Radeon R7 Graphics";
+            case 0x43B4:
+                return "X399 Series Chipset USB 3.1 xHCI Controller";
+            }
+            break;
+        case 0x197b: // JMicron Technology Corp.
+            switch (deviceID)
+            {
+            case 0x2391:
+                return "JMB39X SD/MMC Host Controller";
+            case 0x2392:
+                return "JMB39X SD/MMC Host Controller";
+            case 0x2380:
+                return "JMB38X MS Host Controller";
+            }
+            break;
+        case 0x1033: // NEC Corporation
+            switch (deviceID)
+            {
+            case 0x0194:
+                return "uPD72873 IEEE1394 OHCI 1.1 3-port PHY-Link Ctrlr";
+            default:
+                return "USB 2.0 Controller";
+            }
+            break;
         }
         return to_hstring(deviceID);
     }

@@ -123,18 +123,6 @@ double distance(double x1, double y1, double x2, double y2)
     return sqrt(dx * dx + dy * dy);
 };
 
-double pow(double base, int exponent)
-{
-    double result = 1.0;
-
-    for (int i = 0; i < exponent; i++)
-    {
-        result *= base;
-    }
-
-    return result;
-}
-
 int64_t pow(int64_t base, int64_t exponent)
 {
     double result = 1.0;
@@ -154,4 +142,16 @@ double fabs(double x)
         return -x;
     }
     return x;
+}
+
+double pow(double base, int exponent)
+{
+    double result = 1.0;
+
+    for (int i = 0; i < exponent; i++)
+    {
+        result *= base;
+    }
+
+    return result;
 }

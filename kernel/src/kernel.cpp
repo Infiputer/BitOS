@@ -1,4 +1,4 @@
-#include <stddef.h>
+#include <stdint.h>
 #include "BitOSDatatypes.h"
 #include "BitOSUtilities.h"
 #include "ToString.h"
@@ -6,34 +6,56 @@
 #include "panels/renderPanel.h"
 #include "kernelUtil.h"
 #include "graphics/renderGUI.h"
-#include "executables/ExecutableRegisters.h"
+#include "executables/ExecutableClass.h"
 
-ExeRegisters exeR;
+Executable exe;
 extern "C" void _start(BootInfo *bootInfo) // Start function
 {
 
     bootHelper(bootInfo);
     log("BitOS Started!", LOG_GREEN);
-    log("Testing Registers");
 
-    exeR.clear();
-    exeR.setRegister(14, 0xabcdef123);
-    log("Got:", 0, 0, 0);
-    log(to_hstring(exeR.getRegister(14)), 0, 0, 0);
-    log("; Expected 0xABCDEF123");
+    uint8_t *exePage = (uint8_t *)GlobalAllocator.RequestPage();
 
-    exeR.clear();
-    exeR.setRegister(7, 0xff);
-    log("Got:", 0, 0, 0);
-    log(to_hstring(exeR.getRegister(14)), 0, 0, 0);
-    log("; Expected 0xFF");
+    exePage[0] = 0x03; //  ADD mloc + mloc
 
-    exeR.clear();
-    exeR.setRegister(12, 0x12345);
-    exeR.setRegister(13, 0xabcdef);
-    log("Got:", 0, 0, 0);
-    log(to_hstring(exeR.getRegister(14)), 0, 0, 0);
-    log("; Expected 0x0001234500abcdef");
+    exePage[1] = 2; // 2 bytes, uint16_t
+
+    exePage[2] = 0;  // memory location 2 pointer
+    exePage[3] = 0;  // memory location 1 pointer
+    exePage[4] = 0;  // memory location 1 pointer
+    exePage[5] = 0;  // memory location 1 pointer
+    exePage[6] = 0;  // memory location 1 pointer
+    exePage[7] = 0;  // memory location 1 pointer
+    exePage[8] = 0;  // memory location 1 pointer
+    exePage[9] = 19; // memory location 1 pointer
+
+    exePage[10] = 0;  // memory location 2 pointer
+    exePage[11] = 0;  // memory location 2 pointer
+    exePage[12] = 0;  // memory location 2 pointer
+    exePage[13] = 0;  // memory location 2 pointer
+    exePage[14] = 0;  // memory location 2 pointer
+    exePage[15] = 0;  // memory location 2 pointer
+    exePage[16] = 0;  // memory location 2 pointer
+    exePage[17] = 21; // memory location 2 pointer
+
+    exePage[18] = 0; // end program
+
+    exePage[19] = 0xab; // 0xabab (43947)
+    exePage[20] = 0xab; // 0xabab (43947)
+
+    exePage[21] = 0x10; // 0x1020 (4128) 
+    exePage[22] = 0x20; // 0x1020 (4128)
+
+    exe.InitExe(23); // size of exe
+    exe.addPage(exePage);
+
+    for (uint8_t i = 0; i < 3; i++)
+    {
+        exe.RunStep();
+    }
+
+    log(to_string(((uint64_t)exePage[19]) * 256 + exePage[20])); // 43947 + 4128 = 48075
 
     while (true)
     {

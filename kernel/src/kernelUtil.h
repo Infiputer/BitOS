@@ -100,14 +100,14 @@ void bootHelper(BootInfo *bootInfo)
     InitPanels();
     InitPS2Mouse();
 
-    log("\nEnumerate PCI devices", LOG_LIGHT_BLUE);
-    PrepareACPI(bootInfo);
-    log("Finished Enumeration", LOG_LIGHT_BLUE);
+    // log("\nEnumerate PCI devices", LOG_LIGHT_BLUE);
+    // PrepareACPI(bootInfo);
+    // log("Finished Enumeration", LOG_LIGHT_BLUE);
 
     log(""); // new line
 
-    outb(PIC1_DATA, 0b11111001);
-    outb(PIC2_DATA, 0b11101111);
+    // outb(PIC1_DATA, 0b11111001);
+    // outb(PIC2_DATA, 0b11101111);
 
-    asm("sti");
+    // asm("sti");
 }
