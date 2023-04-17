@@ -16,38 +16,13 @@ extern "C" void _start(BootInfo *bootInfo) // Start function
     log("BitOS Started!", LOG_GREEN);
 
     uint8_t *exePage = (uint8_t *)GlobalAllocator.RequestPage();
+    uint8_t exeContent[] = {
+        7, 1, 0, 0, 0, 0, 0, 0, 0, 39, 0, 0, 0, 0, 0, 0, 0, 41, 18, 0, 0, 0, 0, 0, 0, 0, 43, 7, 9, 7, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 200, 0, 100, 234
+    };
 
-    exePage[0] = 0x03; //  ADD mloc + mloc
-
-    exePage[1] = 2; // 2 bytes, uint16_t
-
-    exePage[2] = 0;  // memory location 2 pointer
-    exePage[3] = 0;  // memory location 1 pointer
-    exePage[4] = 0;  // memory location 1 pointer
-    exePage[5] = 0;  // memory location 1 pointer
-    exePage[6] = 0;  // memory location 1 pointer
-    exePage[7] = 0;  // memory location 1 pointer
-    exePage[8] = 0;  // memory location 1 pointer
-    exePage[9] = 19; // memory location 1 pointer
-
-    exePage[10] = 0;  // memory location 2 pointer
-    exePage[11] = 0;  // memory location 2 pointer
-    exePage[12] = 0;  // memory location 2 pointer
-    exePage[13] = 0;  // memory location 2 pointer
-    exePage[14] = 0;  // memory location 2 pointer
-    exePage[15] = 0;  // memory location 2 pointer
-    exePage[16] = 0;  // memory location 2 pointer
-    exePage[17] = 21; // memory location 2 pointer
-
-    exePage[18] = 0; // end program
-
-    exePage[19] = 0xab; // 0xabab (43947)
-    exePage[20] = 0xab; // 0xabab (43947)
-
-    exePage[21] = 0x10; // 0x1020 (4128) 
-    exePage[22] = 0x20; // 0x1020 (4128)
-
-    exe.InitExe(23); // size of exe
+    memcpy(exePage, exeContent, sizeof(exeContent));
+    
+    exe.InitExe(44); // size of exe
     exe.addPage(exePage);
 
     for (uint8_t i = 0; i < 3; i++)
@@ -55,7 +30,10 @@ extern "C" void _start(BootInfo *bootInfo) // Start function
         exe.RunStep();
     }
 
-    log(to_string(((uint64_t)exePage[19]) * 256 + exePage[20])); // 43947 + 4128 = 48075
+    log("200 - 100 = ", 0, 0, 0);
+    log(to_string(((uint64_t)exePage[39]) * 256 + exePage[40])); // 43947 + 4128 = 48075
+    log("234 - 10 = ", 0, 0, 0);
+    log(to_string(exe.exeRegs.getRegister(14)));
 
     while (true)
     {

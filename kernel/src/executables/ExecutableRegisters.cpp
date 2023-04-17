@@ -126,11 +126,11 @@ uint64_t ExeRegisters::getRegister(uint8_t registerNumber)
 uint8_t ExeRegisters::sizeBytesReg(uint8_t registerNumber)
 {
     uint8_t registerNumberMod = registerNumber % 15;
-    if (registerNumberMod < 7)
+    if (registerNumberMod <= 7)
         return 1;
     if (registerNumberMod >= 8 && registerNumberMod <= 11)
         return 2;
-    if (registerNumberMod == 12 || registerNumberMod <= 13)
+    if (registerNumberMod == 12 || registerNumberMod == 13)
         return 4;
     if (registerNumberMod == 14)
         return 8;

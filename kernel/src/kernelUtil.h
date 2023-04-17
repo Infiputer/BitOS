@@ -92,9 +92,9 @@ void bootHelper(BootInfo *bootInfo)
 
     InitLog();
 
-    log("Enabling Double Buffering", LOG_LIGHT_BLUE);
+    log("Enabling Double Buffering", LOG_BLUE);
     graphics->enableDoubleBuffering();
-    log("Double Buffering Started!", LOG_LIGHT_BLUE);
+    log("Double Buffering Started!", LOG_BLUE);
 
     PrepareInterrupts();
     InitPanels();

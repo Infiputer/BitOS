@@ -20,8 +20,8 @@ void InitLog()
 #define LOG_RGB_LIGHT_ORANGE color_rgb(255, 195, 77)
 #define LOG_RGB_LIGHT_YELLOW color_rgb(255, 255, 77)
 #define LOG_RGB_LIGHT_GREEN  color_rgb(166, 255, 77)
-#define LOG_RGB_LIGHT_BLUE   color_rgb(77, 195, 255)
-#define LOG_RGB_LIGHT_PURPLE color_rgb(229, 102, 255)
+#define LOG_RGB_LIGHT_BLUE   color_rgb(137, 221, 255)
+#define LOG_RGB_LIGHT_PURPLE color_rgb(199, 146, 234)
 #define LOG_RGB_LIGHT_BLACK  color_rgb(150, 150, 150)
 #define LOG_RGB_LIGHT_BROWN  color_rgb(204, 136, 0)
 #define LOG_RGB_RED          color_rgb(255, 0, 0)
@@ -128,7 +128,7 @@ uint64_t logColortoRGB(uint8_t color)
 
 void showLog()
 {
-    graphics->clear(0x4d0448);
+    graphics->clear(0);
     uint32_t logPosX = 0;
     uint32_t logPosY = 0;
     uint32_t currentfg = logColortoRGB(logText[1]);

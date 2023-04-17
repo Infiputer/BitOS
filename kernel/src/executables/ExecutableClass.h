@@ -83,7 +83,7 @@ public:
             progEnd = true;
         else if (instruction == 0x01) // HALT; implement later
             asm("nop");
-        else if (instruction == 0x02) // ADD reg1 + reg2
+        else if (instruction == 0x02) // ADD reg1 += reg2
         {
             uint8_t reg1 = exeRegs.getRegister(*getExeIndex(currentCodePointer));
             uint64_t result = reg1 + exeRegs.getRegister(*(uint8_t *)getExeIndex(currentCodePointer++));
@@ -91,16 +91,12 @@ public:
                 overflowFlag = result >= pow(256, exeRegs.sizeBytesReg(reg1));
             exeRegs.setRegister(reg1, result);
         }
-        else if (instruction == 0x03) // ADD byte; size, mloc + mloc
+        else if (instruction == 0x03) // ADD byte; size, mloc += mloc
         {
-            uint8_t mlocSize = *getExeIndex(currentCodePointer);
-            currentCodePointer++;
+            uint8_t mlocSize = *getExeIndex(currentCodePointer++);
+
             if (mlocSize == 0 || mlocSize > 8)
-            {
-                log("Invalid size of ", 0, 0, 0);
-                log(to_string((uint64_t)mlocSize));
                 return;
-            }
 
             uint64_t mloc1 = getExeBytes(currentCodePointer, 8);
             currentCodePointer += 8;
@@ -113,7 +109,7 @@ public:
 
             setExeBytes(mloc1, result, mlocSize);
         }
-        else if (instruction == 0x04) // ADD byte; size, reg + mloc
+        else if (instruction == 0x04) // ADD byte; size, reg += mloc
         {
             uint8_t mlocSize = *getExeIndex(currentCodePointer++);
             if (mlocSize == 0 || mlocSize > 8)
@@ -124,10 +120,71 @@ public:
             overflowFlag = result >= pow(256, exeRegs.sizeBytesReg(reg));
             exeRegs.setRegister(reg, result);
         }
+        else if (instruction == 0x05) // ADD reg -= int
+        {
+            uint8_t reg = *getExeIndex(currentCodePointer++);
+            uint64_t result = exeRegs.getRegister(reg) + getExeBytes(currentCodePointer, 8);
+            currentCodePointer += 8;
+            overflowFlag = result >= pow(256, exeRegs.sizeBytesReg(reg));
+            exeRegs.setRegister(reg, result);
+        }
+        else if (instruction == 0x06) // SUBTRACT reg1 -= reg2
+        {
+            uint8_t reg1 = exeRegs.getRegister(*getExeIndex(currentCodePointer));
+            uint64_t result = reg1 - exeRegs.getRegister(*(uint8_t *)getExeIndex(currentCodePointer++));
+            if (exeRegs.sizeBytesReg(reg1) != 8)
+                overflowFlag = result >= pow(256, exeRegs.sizeBytesReg(reg1));
+            exeRegs.setRegister(reg1, result);
+        }
+        else if (instruction == 0x07) // SUBTRACT; size, mloc1 -= mloc2
+        {
+            uint8_t mlocSize = *getExeIndex(currentCodePointer++);
+
+            if (mlocSize == 0 || mlocSize > 8)
+                return;
+
+            uint64_t mloc1 = getExeBytes(currentCodePointer, 8);
+            currentCodePointer += 8;
+
+            uint64_t mloc2 = getExeBytes(currentCodePointer, 8);
+            currentCodePointer += 8;
+
+            uint64_t result = getExeBytes(mloc1, mlocSize) - getExeBytes(mloc2, mlocSize);
+            overflowFlag = result >= pow(256, mlocSize); // can't go higher than 256 ^ 1
+
+            setExeBytes(mloc1, result, mlocSize);
+        }
+        else if (instruction == 0x08) // SUBTRACT; size, reg -= mloc
+        {
+            uint8_t mlocSize = *getExeIndex(currentCodePointer++);
+            if (mlocSize == 0 || mlocSize > 8)
+                return;
+            uint8_t reg = *getExeIndex(currentCodePointer++);
+            uint64_t result = exeRegs.getRegister(reg) - getExeBytes(getExeBytes(currentCodePointer, 8), mlocSize);
+            currentCodePointer += 8;
+            overflowFlag = result >= pow(256, exeRegs.sizeBytesReg(reg));
+            exeRegs.setRegister(reg, result);
+        }
+        else if (instruction == 0x09) // SUBTRACT reg -= int
+        {
+            uint8_t reg = *getExeIndex(currentCodePointer++);
+            uint64_t result = exeRegs.getRegister(reg) - getExeBytes(currentCodePointer, 8);
+            currentCodePointer += 8;
+            overflowFlag = result >= pow(256, exeRegs.sizeBytesReg(reg));
+            exeRegs.setRegister(reg, result);
+        }
+        else if (instruction == 0x12)
+        {
+            uint64_t mloc = getExeBytes(currentCodePointer, 8);
+            currentCodePointer += 8;
+            uint8_t reg = *getExeIndex(currentCodePointer++);
+            exeRegs.setRegister(reg, getExeBytes(mloc, exeRegs.sizeBytesReg(reg)));
+            // log("size:", 0, 0, 0);
+            log(to_string((uint64_t)exeRegs.sizeBytesReg(reg)));
+        }
         else
         {
             log("Unknown instruction ", LOG_RED, 0, 0);
-            log(to_hstring(instruction), LOG_RED);
         }
     }
 };
