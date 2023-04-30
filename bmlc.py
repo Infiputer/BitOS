@@ -1,5 +1,7 @@
 # Bit OS Machine Langauge Compiler
+
 import sys
+from datetime import datetime
 
 # OP Code,Mnemonic,Op1,Op2,Op3
 # 0x00,ENDPRG
@@ -140,7 +142,7 @@ functions = {
     },
     'DIVMM': {
         'opcode': 0xf,
-        'paramters': [
+        'parameters': [
             {'type': 'int', 'size': '1'},
             {'type': 'mloc', 'size': 'any'},
             {'type': 'mloc', 'size': 'any'}
@@ -148,7 +150,7 @@ functions = {
     },
     'DIVRM': {
         'opcode': 0x10,
-        'paramters': [
+        'parameters': [
             {'type': 'int', 'size': '1'},
             {'type': 'reg', 'size': 'any'},
             {'type': 'mloc', 'size': 'any'}
@@ -193,7 +195,7 @@ functions = {
         'opcode': 0x16,
         'parameters': [
             {'type': 'reg', 'size': 'any'},
-            {'type': 'int', 'size': '64'}
+            {'type': 'int', 'size': '8'}
         ]
     },
     'JE': {
@@ -226,10 +228,21 @@ functions = {
             {'type': 'mloc', 'size': 'any'}
         ]
     },
-    'SYSCALL': {
-        'opcode': 0xFF,
+    'PRINT': {
+        'opcode': 0x1C,
+        'parameters': []
+    },
+    'PRINTCHR': {
+        'opcode': 0x1D,
         'parameters': [
-            {'type': 'int', 'size': '2'}
+            {'type': 'int', 'size': '1'}
+        ]
+    },
+    'SET': {
+        'opcode': 0x1E,
+        'parameters': [
+            {'type': 'reg', 'size': 'any'},
+            {'type': 'int', 'size': '8'}
         ]
     }
 }
@@ -260,6 +273,7 @@ registers = {
     ]
 }
 
+
 def registerToByte(reg: str):
     if reg[0] == 'A':
         letter = 0
@@ -282,16 +296,35 @@ def numToArray(size: int, number: int):
         number >>= 8
     return arr
 
+
 def toInt(num: str):
-    if(num.startswith("0x")):
+    if num.startswith("0x"):
         return int(num[2:], 16)
-    elif(num.endswith("h")):
+    elif num.endswith("h"):
         return int(num[:-1], 16)
+    elif len(num) == 3 and num.startswith("'") and num.endswith("'"):
+        return ord(num[1])
     else:
         return int(num)
+    
+def bytesToHumanReadable(bytes):
+    units = ['bytes', 'KB', 'MB', 'GB', 'TB']
+    index = 0
+    size = bytes
+    
+    while size >= 1024 and index < 4:
+        size /= 1024
+        index += 1
+    
+    result = "{} {}".format(round(size, 1), units[index])
+    return result
+
+def getCurrentTimeAsString():
+    now = datetime.now()
+    return now.strftime("%Y-%m-%d, %l:%M %p")
 
 if len(sys.argv) < 2:
-    print("Usage: python main.py <file_name>")
+    print("Usage: python bmlc.py <file_name>")
     exit(1)
 with open(sys.argv[1], 'r') as f:
     code = f.read()
@@ -302,7 +335,10 @@ mlocLocations = {}
 
 rawBytes = []
 
+codeBytesNewlines = []
+
 for line in codeLines:
+    line = line.strip()
     if not line:  # line is empty
         continue
     if ' ' in line:
@@ -310,12 +346,14 @@ for line in codeLines:
     else:
         mnemonicEndIndex = len(line)
     mnemonic = line[0:mnemonicEndIndex]
-    
+
     parameters = line[mnemonicEndIndex:].split(',')
     parameters = [
         parameter.strip() for parameter in parameters if parameter.strip() != '']
 
-    if mnemonic == "DB":
+    if mnemonic.startswith("#"):
+        pass
+    elif mnemonic == "DB":
         for i in parameters:
             rawBytes.append(toInt(i))
     elif mnemonic == "DBT":
@@ -325,15 +363,16 @@ for line in codeLines:
             rawBytes.append(num)
     elif mnemonic[0] == '$':
         mlocLocations[mnemonic] = len(rawBytes)
+        codeBytesNewlines.append(len(rawBytes)-1)
     else:
         if mnemonic not in functions:
             exit('Unknown mnemonic ' + mnemonic)
 
         if len(functions[mnemonic]['parameters']) != len(parameters):
             exit(mnemonic + ' requires ' +
-                str(len(functions[mnemonic]['parameters'])) + ' parameters, given ' +
-                str(len(parameters))
-                )
+                 str(len(functions[mnemonic]['parameters'])) + ' parameters, given ' +
+                 str(len(parameters))
+                 )
 
         rawBytes.append(functions[mnemonic]['opcode'])
 
@@ -341,31 +380,50 @@ for line in codeLines:
             # print('\t', parameter, end=' ')
             # print('type', functions[mnemonic]['parameters'][i]['type'])
             if functions[mnemonic]['parameters'][i]['type'] == 'int':
-                rawBytes += numToArray(
-                    int(functions[mnemonic]['parameters'][i]['size']),
-                    toInt(parameter)
-                )
+                if parameter[0] == '$':
+                    rawBytes.append(parameter)
+                    rawBytes += [0] * 7
+                else:
+                    rawBytes += numToArray(
+                        int(functions[mnemonic]['parameters'][i]['size']),
+                        toInt(parameter)
+                    )
             elif functions[mnemonic]['parameters'][i]['type'] == 'mloc':
                 if parameter[0] == '$':
                     rawBytes.append(parameter)
                     rawBytes += [0] * 7
                 else:
                     rawBytes += numToArray(
-                        8, # 64-bit system; 8 byte pointers
+                        8,  # 64-bit system; 8 byte pointers
                         toInt(parameter)
                     )
             elif functions[mnemonic]['parameters'][i]['type'] == 'reg':
                 rawBytes.append(registerToByte(parameter))
 
-print(mlocLocations)
+        codeBytesNewlines.append(len(rawBytes)-1)
+
+print("/*")
+print("Generated by Bit OS Machine Langauge Compiler")
+print("File:", sys.argv[1])
+print("Total Size:", bytesToHumanReadable(len(rawBytes)))
+print("Time Compiled:", getCurrentTimeAsString())
+print()
+
+print("Data Memory Locations")
+for var in mlocLocations:
+    print(' ', var + ':', mlocLocations[var])
 for i, x in enumerate(rawBytes):
     if type(x) == str:
         mloc = numToArray(8, mlocLocations[x])
         for y in range(0, 8):
             rawBytes[y + i] = mloc[y]
-
-print(rawBytes)
-# 7, 2, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 42,
-# 18, 0, 0, 0, 0, 0, 0, 0, 44, 7,
-# 9, 7, 0, 0, 0, 0, 0, 0, 0, 35,
-# 0
+print("*/")
+print("#include <stdint.h>")
+print("#define EXE_SIZE", len(rawBytes))
+print("uint8_t exeContent[] = {")
+print('  ',end = '')
+for index, i in enumerate(rawBytes):
+    print(i, end = ', ')
+    if index in codeBytesNewlines:
+        print('\n  ', end = '')
+print("\n};", end = '')

@@ -1,13 +1,20 @@
-SUBMM 1, $VALUE1, $VALUE2
-LEAMR $VALUE3, A7
-SUBRI A7, 10 
+SET B14, $str
+JMP $print
+
 ENDPRG
 
-$VALUE1
-DB 0, 200
+$print
+    LEARR B14, A0
+    CMPRI A0, 0
+    JE $end_print
+    PRINT
+    ADDRI B14, 1
+    JMP $print
 
-$VALUE2
-DB 0, 100
+$end_print
+    ENDPRG
 
-$VALUE3
-DB 234
+
+$str
+DB 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', '!', 0
+

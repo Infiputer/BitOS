@@ -34,6 +34,7 @@ void ExeRegisters::clear()
     c[7] = 0;
     d[7] = 0;
 }
+
 uint64_t ExeRegisters::getRegister(uint8_t registerNumber)
 {
     uint8_t registerNumberMod = registerNumber % 15;
@@ -123,6 +124,7 @@ uint64_t ExeRegisters::getRegister(uint8_t registerNumber)
     }
     return 0;
 };
+
 uint8_t ExeRegisters::sizeBytesReg(uint8_t registerNumber)
 {
     uint8_t registerNumberMod = registerNumber % 15;

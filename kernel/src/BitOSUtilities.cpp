@@ -67,7 +67,10 @@ bool isAlpha(char c)
 */
 char toUpper(char c)
 {
-    return c + ('A' - 'a');
+    if(c >= 'a' && c <= 'z')
+        return c + ('A' - 'a');
+    else
+        return c;
 }
 
 /**
